@@ -7,3 +7,7 @@ if [ ! -f /usr/local/bin/youtube-dl ]; then
 fi
 
 chmod a+rx /usr/local/bin/youtube-dl
+
+youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames \
+    -o '/usr/test/%(upload_date)s_%(id)s.%(ext)s' -f 'bestvideo[height<=1080]+bestaudio/best[height<=1080]' \
+    -a /usr/local/bin/queue.txt
