@@ -1,6 +1,6 @@
 # Download and Build Test Data
 
-```
+```bash
 #[user]$
 docker-compose -f docker-compose-testdata.yml up
 ```
