@@ -34,6 +34,5 @@ for filename in os.listdir('test/data/l-_NYHkKdwQ/'):
 
             query = "INSERT INTO image_matches (filename, method, min_val, min_x, min_y, max_val, max_x, max_y) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             args = (filename, meth, min_val, min_x, min_y, max_val, max_x, max_y)
-
             x.execute(query, args)
             #conn.commit()
