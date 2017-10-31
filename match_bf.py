@@ -10,7 +10,7 @@ x = conn.cursor()
 img1 = cv2.imread('box.png',0)          # queryImage
 
 # Initiate ORB detector
-orb = cv2.ORB_create()
+orb = cv2.ORB()
 
 for filename in os.listdir('test/data/l-_NYHkKdwQ/'):
     if filename.endswith(".jpg"):
