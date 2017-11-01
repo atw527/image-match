@@ -5,4 +5,4 @@ services:
         volumes:
             - ./test/data:/usr/test
             - ./test/bin:/usr/local/bin
-        command: ["bash", "/usr/local/bin/run.sh"]
+        command: ["bash", "/usr/local/bin/init.sh"]
