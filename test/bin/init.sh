@@ -12,8 +12,15 @@ youtube-dl --write-thumbnail --write-description --write-info-json --restrict-fi
     -o '/usr/test/%(id)s.%(ext)s' -f 137 \
     -a /usr/local/bin/queue.txt
 
-mkdir /usr/test/l-_NYHkKdwQ
-ffmpeg -i /usr/test/l-_NYHkKdwQ.mp4 -r 10/1 -f image2 /usr/test/l-_NYHkKdwQ/%6d.jpg
-
-mkdir /usr/test/_-0XprLfiNQ
-ffmpeg -i /usr/test/_-0XprLfiNQ.mp4 -r 10/1 -f image2 /usr/test/_-0XprLfiNQ/%6d.jpg
+cd /usr/test/
+for f in *.mp4
+do
+    dir="${f%.*}"
+	if [ ! -d $dir ]; then
+        echo $dir not found
+        mkdir /usr/test/$dir
+        ffmpeg -i /usr/test/$f -r 10/1 -f image2 /usr/test/$dir/%6d.jpg
+    else
+        echo $dir exists
+    fi
+done
