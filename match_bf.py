@@ -20,7 +20,8 @@ if not os.path.isdir(youtube_path):
     print "YouTube path does not exist."
     exit(1)
 
-youtube_path = os.path.join(youtube_path, '') // ensures a trailing slash
+youtube_path = os.path.join(youtube_path, '') # ensures a trailing slash
+youtube_id = os.path.basename(os.path.normpath(youtube_path))
 
 conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
 x = conn.cursor()
@@ -37,7 +38,7 @@ for filename in sorted(filelist):
     if filename.endswith(".jpg"):
         img2 = cv2.imread(youtube_path + filename, 0) # trainImage
 
-        video_id, frame, ext = filename.split(".")
+        frame, ext = filename.split(".")
 
         print filename
 
@@ -55,13 +56,13 @@ for filename in sorted(filelist):
             # Sort them in the order of their distance.
             matches = sorted(matches, key = lambda x:x.distance)
 
-            print video_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
+            print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            args = (video_id, request_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
+            args = (youtube_id, request_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
             x.execute(query, args)
             #conn.commit()
         except:
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename) VALUES (%s, %s, %s, %s)"
-            args = (video_id, request_id, frame, filename)
+            args = (youtube_id, request_id, frame, filename)
             x.execute(query, args)
