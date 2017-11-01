@@ -40,7 +40,7 @@ for filename in sorted(filelist):
 
         frame, ext = filename.split(".")
 
-        print filename
+        #print filename
 
         try:
             # find the keypoints and descriptors with ORB
@@ -56,12 +56,13 @@ for filename in sorted(filelist):
             # Sort them in the order of their distance.
             matches = sorted(matches, key = lambda x:x.distance)
 
-            print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
+            #print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             args = (youtube_id, request_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
             x.execute(query, args)
             #conn.commit()
+
         except:
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename) VALUES (%s, %s, %s, %s)"
             args = (youtube_id, request_id, frame, filename)
