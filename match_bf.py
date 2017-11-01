@@ -75,3 +75,10 @@ for filename in sorted(filelist):
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename) VALUES (%s, %s, %s, %s)"
             args = (youtube_id, task_id, frame, filename)
             x.execute(query, args)
+
+query = "UPDATE tasks SET completed = %s WHERE task_id = %s LIMIT 1"
+print query, socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id
+args = (time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+x.execute(query, args)
+
+print "done!"
