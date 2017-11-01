@@ -17,7 +17,6 @@ while True:
     if x.rowcount == 1:
         break
     time.sleep(5)
-    print "Nothing to do"
 
 row = x.fetchone()
 
@@ -28,7 +27,6 @@ youtube_path = "test/data/" + youtube_id + "/"
 source_image = "templates/" + row[3]
 
 query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
-print query, socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id
 args = (socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 
@@ -64,7 +62,7 @@ for filename in sorted(filelist):
 
             #print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
-            query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             args = (youtube_id, task_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
             x.execute(query, args)
             #conn.commit()
@@ -72,12 +70,11 @@ for filename in sorted(filelist):
         except Exception, e:
             print str(e)
             print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
-            query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename) VALUES (%s, %s, %s, %s)"
+            query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
             args = (youtube_id, task_id, frame, filename)
             x.execute(query, args)
 
 query = "UPDATE tasks SET completed = %s WHERE task_id = %s LIMIT 1"
-print query, socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id
 args = (time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 
