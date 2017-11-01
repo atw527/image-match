@@ -3,28 +3,34 @@ import os
 import MySQLdb
 import datetime
 import sys
+import time
+import socket
 import numpy as np
 from matplotlib import pyplot as plt
 
-if len(sys.argv) != 4:
-    print "Incorrect number of arguments.  Need request_id, source_image, youtube_path"
-    exit(1)
-
-_, request_id, source_image, youtube_path = sys.argv
-
-if not os.path.isfile(source_image):
-    print "Source image does not exist."
-    exit(1)
-
-if not os.path.isdir(youtube_path):
-    print "YouTube path does not exist."
-    exit(1)
-
-youtube_path = os.path.join(youtube_path, '') # ensures a trailing slash
-youtube_id = os.path.basename(os.path.normpath(youtube_path))
-
 conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
+conn.autocommit(True)
 x = conn.cursor()
+
+while True:
+    x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1")
+    if x.rowcount == 1:
+        break
+    time.sleep(5)
+    print "Nothing to do"
+
+row = x.fetchone()
+
+task_id = row[0]
+task_guid = row[1]
+youtube_id = row[2]
+youtube_path = "test/data/" + youtube_id + "/"
+source_image = "templates/" + row[3]
+
+query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
+print query, socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id
+args = (socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+x.execute(query, args)
 
 img1 = cv2.imread(source_image, 0)          # queryImage
 
@@ -59,11 +65,13 @@ for filename in sorted(filelist):
             #print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            args = (youtube_id, request_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
+            args = (youtube_id, task_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
             x.execute(query, args)
             #conn.commit()
 
-        except:
+        except Exception, e:
+            print str(e)
+            print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
             query = "INSERT INTO image_matches_bf (video_id, request_id, frame, filename) VALUES (%s, %s, %s, %s)"
-            args = (youtube_id, request_id, frame, filename)
+            args = (youtube_id, task_id, frame, filename)
             x.execute(query, args)
