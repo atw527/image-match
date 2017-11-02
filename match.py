@@ -15,7 +15,7 @@ x = conn.cursor()
 
 def signal_handler(signal, frame):
         print('Shuting down...')
-        global task_id
+        global task_id, conn, x
         print task_id
 
         query = "DELETE FROM image_matches_bf WHERE task_id = %s"
