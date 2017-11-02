@@ -1,38 +1,85 @@
 import cv2
 import os
 import MySQLdb
+import datetime
+import sys
+import time
+import socket
 import numpy as np
 from matplotlib import pyplot as plt
 
-conn = MySQLdb.connect(host="a01-docker-01", user="root", passwd="q1w2e3r4", db="intelligence")
+conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
+conn.autocommit(True)
 x = conn.cursor()
 
-template = cv2.imread('template.jpg',0)
-w, h = template.shape[::-1]
+while True:
+    x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1")
+    if x.rowcount == 1:
+        break
+    time.sleep(5)
 
-for filename in os.listdir('test/data/l-_NYHkKdwQ/'):
+row = x.fetchone()
+
+task_id = row[0]
+task_guid = row[1]
+youtube_id = row[2]
+youtube_path = "data/frames/" + youtube_id + "/"
+source_image = "data/templates/" + row[3]
+
+query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
+args = (socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+x.execute(query, args)
+
+img1 = cv2.imread(source_image, 0)          # queryImage
+
+# Initiate ORB detector
+orb = cv2.ORB()
+
+start_time = time.time()
+print "Picking up task: ", task_id, task_guid, youtube_id
+
+filelist = os.listdir(youtube_path)
+for filename in sorted(filelist):
     if filename.endswith(".jpg"):
-        img = cv2.imread('test/data/l-_NYHkKdwQ/' + filename, 0)
-        img2 = img.copy()
+        img2 = cv2.imread(youtube_path + filename, 0) # trainImage
 
-        # All the 6 methods for comparison in a list
-        methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
-                    'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
+        frame, ext = filename.split(".")
 
-        for meth in methods:
-            img = img2.copy()
-            method = eval(meth)
+        #print filename
 
-            # Apply template Matching
-            res = cv2.matchTemplate(img,template,method)
-            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        try:
+            # find the keypoints and descriptors with ORB
+            kp1, des1 = orb.detectAndCompute(img1, None)
+            kp2, des2 = orb.detectAndCompute(img2, None)
 
-            min_x, min_y = min_loc
-            max_x, max_y = max_loc
+            # create BFMatcher object
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
-            print min_val
+            # Match descriptors.
+            matches = bf.match(des1, des2)
 
-            query = "INSERT INTO image_matches (filename, method, min_val, min_x, min_y, max_val, max_x, max_y) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            args = (filename, meth, min_val, min_x, min_y, max_val, max_x, max_y)
+            # Sort them in the order of their distance.
+            matches = sorted(matches, key = lambda x:x.distance)
+
+            #print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
+
+            query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            args = (youtube_id, task_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
             x.execute(query, args)
             #conn.commit()
+
+        except Exception, e:
+            print str(e)
+            print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
+            query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
+            args = (youtube_id, task_id, frame, filename)
+            x.execute(query, args)
+
+query = "UPDATE tasks SET completed = %s WHERE task_id = %s LIMIT 1"
+args = (time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+x.execute(query, args)
+
+run_time = (time.time() - start_time) / 60
+print "Finished task:   ", task_id, task_guid, youtube_id, run_time, " min"
+
+# allowing the script to die, respawned by match_forever.sh or restart options in docker-compose if running in prod
