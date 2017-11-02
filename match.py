@@ -15,24 +15,6 @@ conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="
 conn.autocommit(True)
 x = conn.cursor()
 
-def signal_handler(signal, frame):
-        print('Shuting down...')
-        global task_id, conn, x
-        print task_id
-
-        query = "DELETE FROM image_matches_bf WHERE task_id = %s"
-        args = (task_id)
-        x.execute(query, args)
-
-        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
-        args = (task_id)
-        x.execute(query, args)
-
-        sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
-
 while True:
     x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1")
     if x.rowcount == 1:
@@ -58,6 +40,24 @@ orb = cv2.ORB()
 
 start_time = time.time()
 print "Picking up task: ", task_id, task_guid, youtube_id
+
+def signal_handler(signal, frame):
+        print('Shuting down...')
+        global task_id, conn, x
+        print task_id
+
+        query = "DELETE FROM image_matches_bf WHERE task_id = %s"
+        args = (task_id)
+        x.execute(query, args)
+
+        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
+        args = (task_id)
+        x.execute(query, args)
+
+        sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 filelist = os.listdir(youtube_path)
 for filename in sorted(filelist):
