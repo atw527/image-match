@@ -2,6 +2,7 @@ version: "2"
 services:
     match:
         image: "atw527/image-match:match"
+        scale: 2
         restart: always
         build:
             context: .
