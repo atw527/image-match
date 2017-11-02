@@ -1,0 +1,12 @@
+version: "2"
+services:
+    match:
+        image: "atw527/image-match:match"
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile-match
+        volumes:
+            - ./data:/usr/local/data
+            - ./match-forever.sh:/usr/local/match-forever.sh
+            - ./match.py:/usr/local/match.py
