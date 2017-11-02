@@ -3,6 +3,7 @@ import os
 import MySQLdb
 import datetime
 import sys
+import signal
 import time
 import socket
 import numpy as np
@@ -11,6 +12,23 @@ from matplotlib import pyplot as plt
 conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
 conn.autocommit(True)
 x = conn.cursor()
+
+def signal_handler(signal, frame):
+        print('Shuting down...')
+        if 'task_id' in globals()
+            global task_id
+
+            query = "DELETE FROM image_matches_bf WHERE task_id = %s"
+            args = (task_id)
+            x.execute(query, args)
+
+            query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
+            args = (task_id)
+            x.execute(query, args)
+
+            sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 while True:
     x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1")
