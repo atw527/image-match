@@ -15,10 +15,12 @@ def signal_handler(task_id, x, conn, signal, frame):
         print task_id
 
         query = "DELETE FROM image_matches_bf WHERE task_id = %s"
+        print query
         args = (task_id)
         x.execute(query, args)
 
         query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
+        print query
         args = (task_id)
         x.execute(query, args)
 
