@@ -63,7 +63,7 @@ for filename in sorted(filelist):
 
             #print youtube_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
-            if distance < 26: # only saving matches now
+            if matches[0].distance < 26: # only saving matches now
                 query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 args = (youtube_id, task_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
                 x.execute(query, args)
