@@ -9,7 +9,21 @@ import socket
 import numpy as np
 from matplotlib import pyplot as plt
 
-def main_function():
+def signal_handler(task_id, x, conn, signal, frame):
+        print('Shuting down...')
+        print task_id
+
+        query = "DELETE FROM image_matches_bf WHERE task_id = %s"
+        args = (task_id)
+        x.execute(query, args)
+
+        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
+        args = (task_id)
+        x.execute(query, args)
+
+        sys.exit(0)
+
+def main():
 
     conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
     conn.autocommit(True)
@@ -41,22 +55,8 @@ def main_function():
     start_time = time.time()
     print "Picking up task: ", task_id, task_guid, youtube_id
 
-    def signal_handler(*args):
-            print('Shuting down...')
-            print task_id
-
-            query = "DELETE FROM image_matches_bf WHERE task_id = %s"
-            args = (task_id)
-            x.execute(query, args)
-
-            query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
-            args = (task_id)
-            x.execute(query, args)
-
-            sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, partial(signal_handler, task_id, x, conn))
+    signal.signal(signal.SIGTERM, partial(signal_handler, task_id, x, conn))
 
     filelist = os.listdir(youtube_path)
     for filename in sorted(filelist):
@@ -106,4 +106,4 @@ def main_function():
     # allowing the script to die, respawned by match_forever.sh or restart options in docker-compose if running in prod
 
 if __name__ == '__main__':
-    main_function()
+    main()
