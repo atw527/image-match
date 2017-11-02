@@ -4,4 +4,4 @@ services:
         image: "ubuntu:xenial"
         volumes:
             - ./data:/usr/local
-        command: ["bash", "/usr/local/bin/init.sh"]
+        command: ["bash", "/usr/local/bin/video-download.sh"]
