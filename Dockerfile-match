@@ -1,6 +1,6 @@
 FROM ubuntu:xenial
 
-WORKDIR /usr/src
+WORKDIR /usr/local
 
 COPY etc/sources-xenial.list /etc/apt/sources.list
 RUN apt-get update; \
