@@ -15,18 +15,18 @@ x = conn.cursor()
 
 def signal_handler(signal, frame):
         print('Shuting down...')
-        if 'task_id' in globals()
-            global task_id
+        global task_id
+        print task_id
 
-            query = "DELETE FROM image_matches_bf WHERE task_id = %s"
-            args = (task_id)
-            x.execute(query, args)
+        query = "DELETE FROM image_matches_bf WHERE task_id = %s"
+        args = (task_id)
+        x.execute(query, args)
 
-            query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
-            args = (task_id)
-            x.execute(query, args)
+        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
+        args = (task_id)
+        x.execute(query, args)
 
-            sys.exit(0)
+        sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 
