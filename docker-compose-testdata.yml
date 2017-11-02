@@ -3,6 +3,5 @@ services:
     testdata:
         image: "ubuntu:xenial"
         volumes:
-            - ./test/data:/usr/test
-            - ./test/bin:/usr/local/bin
+            - ./data:/usr/local
         command: ["bash", "/usr/local/bin/init.sh"]

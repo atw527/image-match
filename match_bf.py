@@ -23,8 +23,8 @@ row = x.fetchone()
 task_id = row[0]
 task_guid = row[1]
 youtube_id = row[2]
-youtube_path = "test/data/" + youtube_id + "/"
-source_image = "templates/" + row[3]
+youtube_path = "data/frames/" + youtube_id + "/"
+source_image = "data/templates/" + row[3]
 
 query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
 args = (socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
