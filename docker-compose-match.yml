@@ -3,7 +3,6 @@ services:
     match:
         image: "atw527/image-match:match"
         restart: always
-        scale: 2
         build:
             context: .
             dockerfile: Dockerfile-match
