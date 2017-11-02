@@ -1,7 +1,6 @@
 FROM ubuntu:xenial
 
 WORKDIR /usr/src
-COPY ingesters/* ./
 
 COPY etc/sources-xenial.list /etc/apt/sources.list
 RUN apt-get update; \
