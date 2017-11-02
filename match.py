@@ -85,11 +85,11 @@ for filename in sorted(filelist):
                 #conn.commit()
 
         except Exception, e:
-            print str(e)
-            print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
-            query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
-            args = (youtube_id, task_id, frame, filename)
-            x.execute(query, args)
+            #print str(e)
+            #print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
+            #query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
+            #args = (youtube_id, task_id, frame, filename)
+            #x.execute(query, args)
 
 query = "UPDATE tasks SET completed = %s WHERE task_id = %s LIMIT 1"
 args = (time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
