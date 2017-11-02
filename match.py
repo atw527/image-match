@@ -9,6 +9,8 @@ import socket
 import numpy as np
 from matplotlib import pyplot as plt
 
+global task_id, conn, x
+
 conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
 conn.autocommit(True)
 x = conn.cursor()
