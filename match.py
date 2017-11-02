@@ -7,6 +7,7 @@ import signal
 import time
 import socket
 import numpy as np
+from functools import partial
 from matplotlib import pyplot as plt
 
 def signal_handler(task_id, x, conn, signal, frame):
