@@ -12,17 +12,11 @@ from matplotlib import pyplot as plt
 
 def signal_handler(task_id, x, conn, signal, frame):
         print('Shuting down...')
-        print task_id
 
-        query = "DELETE FROM image_matches_bf WHERE task_id = %s"
-        print query
-        args = (task_id)
-        x.execute(query, args)
-
-        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = %s LIMIT 1"
-        print query
-        args = (task_id)
-        x.execute(query, args)
+        query = "DELETE FROM image_matches_bf WHERE task_id = " + str(task_id)
+        x.execute(query)
+        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = " + str(task_id) + " LIMIT 1"
+        x.execute(query)
 
         sys.exit(0)
 
