@@ -7,4 +7,6 @@ services:
             dockerfile: Dockerfile-video-download
         volumes:
             - ./data:/usr/local
+            - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+            - etc/ssh_config:/root/.ssh/config:ro
         command: ["bash", "/usr/local/bin/video-download.sh"]
