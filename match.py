@@ -45,7 +45,7 @@ source_image = "/tmp/" + row[3]
 hostname = socket.gethostname()
 
 if os.path.isfile("/etc/docker_hostname"):
-    hostname = open("/etc/docker_hostname").read() + "/" + hostname
+    hostname = open("/etc/docker_hostname").read() + " " + hostname
 
 os.system("wget -O /tmp/" + row[3] + " http://a01-docker-01:8088/templates/" + row[3])
 

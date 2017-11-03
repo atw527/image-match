@@ -4,7 +4,7 @@ WORKDIR /usr/local
 
 COPY etc/sources-xenial.list /etc/apt/sources.list
 RUN apt-get update; \
-    apt-get install -y python python-opencv python-mysqldb python-matplotlib; \
+    apt-get install -y python wget curl python-opencv python-mysqldb python-matplotlib; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
