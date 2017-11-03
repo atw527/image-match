@@ -1,16 +1,16 @@
 #!/bin/bash
 
-apt-get update
-apt-get install -y curl ffmpeg python
-curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+#apt-get update
+#apt-get install -y curl ffmpeg python
 
-chmod a+rx /usr/local/bin/youtube-dl
+#curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+#chmod a+rx /usr/local/bin/youtube-dl
 
-youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames \
-    -o '/usr/local/video/%(id)s.%(ext)s' -f 137 \
-    -a /usr/local/bin/queue.txt
+#youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames \
+#    -o '/usr/local/video/%(id)s.%(ext)s' -f 137 \
+#    -a /usr/local/bin/queue.txt
 
-cd /usr/local/frames/
+cd /usr/local/video/
 for f in *.mp4
 do
     dir="${f%.*}"
