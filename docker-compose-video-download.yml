@@ -1,6 +1,6 @@
 version: "2"
 services:
-    testdata:
+    video-download:
         image: "atw527/image-match:video-download"
         build:
             context: .
