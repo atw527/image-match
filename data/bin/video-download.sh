@@ -17,7 +17,7 @@ for f in *.mp4
 do
     dir="${f%.*}"
 	if [ ! -d "$dir" ]; then
-        echo $dir not found; creating and building frames...
+        echo `pwd`/$dir not found, creating and building frames...
         mkdir /usr/local/frames/$dir
         ffmpeg -i /usr/local/video/$f -r 10/1 -f image2 /usr/local/frames/$dir/%6d.jpg > /dev/null
         echo $dir frame build complete!
