@@ -1,10 +1,8 @@
 #!/bin/bash
 
-if [ ! -f /usr/local/bin/youtube-dl ]; then
-    apt-get update
-    apt-get install -y curl ffmpeg python
-    curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
-fi
+apt-get update
+apt-get install -y curl ffmpeg python
+curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 
 chmod a+rx /usr/local/bin/youtube-dl
 
