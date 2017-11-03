@@ -30,7 +30,7 @@ done
 #TODO (basically some rsync commands of the meta files)
 /usr/local/bin/ssh-test.exp andrew a01-docker-01
 
-if [ ! $? -eq 0 ]
+if [ $? -eq 0 ]
 then
     rsync data/video/*.json andrew@a01-docker-01:/home/andrew/go/src/github.com/atw527/image-match/data/video/
     rsync data/video/*.description andrew@a01-docker-01:/home/andrew/go/src/github.com/atw527/image-match/data/video/
