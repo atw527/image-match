@@ -12,7 +12,7 @@ else
 fi
 
 # blow up the filesystem with thousands of JPGs (extract video files for image comparison)
-cd /usr/local/video/
+cd /usr/local/frames/
 for f in *.mp4
 do
     dir="${f%.*}"
