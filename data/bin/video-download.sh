@@ -25,3 +25,7 @@ do
         echo $dir exists
     fi
 done
+
+# fix some permissions
+chmod -R +r /usr/local/video
+chmod -R +r /usr/local/frames
