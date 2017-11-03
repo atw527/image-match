@@ -28,7 +28,8 @@ dirs = next(os.walk('data/frames'))[1]
 dir_list = "'" + "', '".join(dirs) + "'"
 
 while True:
-    x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL && video_id IN (%s) LIMIT 1", dir_list)
+    sql = "SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL && video_id IN (" + dir_list + ") LIMIT 1"
+    x.execute(sql)
     if x.rowcount == 1:
         break
     time.sleep(5)
