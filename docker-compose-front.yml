@@ -1,7 +1,10 @@
 version: "2"
 services:
     testdata:
-        image: "php:apache"
+        image: "atw527/image-match:front"
+        build:
+            context: .
+            dockerfile: Dockerfile-front
         expose:
             - "80"
         ports:
@@ -9,3 +12,4 @@ services:
         volumes:
             - ./front:/var/www/html
             - ./data:/usr/local/data
+            - ./etc/php.ini:/etc/php/7.0/apache2/php.ini

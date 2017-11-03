@@ -1,4 +1,50 @@
 <?php
+    function getGUID() {
+        $charid = strtolower(md5(uniqid(rand(), true)));
+        $hyphen = chr(45);// "-"
+        $uuid =
+             substr($charid, 0, 8).$hyphen
+            .substr($charid, 8, 4).$hyphen
+            .substr($charid,12, 4).$hyphen
+            .substr($charid,16, 4).$hyphen
+            .substr($charid,20,12);
+        return $uuid;
+    }
+
+    if (isset($_POST['submit'])) {
+        $db = mysqli_connect('a01-mysql-01', 'root', 'q1w2e3r4', 'image_match');
+        $guid = getGUID();
+
+        // Set a maximum height and width
+        $width = 1920;
+        $height = 1920;
+
+        list($width_orig, $height_orig) = getimagesize($_FILES['template']['tmp_name']);
+
+        $ratio_orig = $width_orig/$height_orig;
+
+        if ($width/$height > $ratio_orig) {
+           $width = $height*$ratio_orig;
+        } else {
+           $height = $width/$ratio_orig;
+        }
+
+        $image_p = imagecreatetruecolor($width, $height);
+        $image = imagecreatefromjpeg($_FILES['template']['tmp_name']);
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+        imagejpeg($image_p, "templates/$guid.jpg", 100);
+
+        foreach ($_POST['videos'] as $video_id => $selected) {
+            $video_id = mysqli_real_escape_string($db, $video_id);
+            $sql = "INSERT INTO tasks (guid, video_id, template) VALUES ('$guid', '$video_id', '$guid.jpg')";
+            $db->query($sql);
+        }
+
+        header('Location: view_task.php?guid=' . $guid);
+
+        exit();
+    }
+
     $files = scandir("/usr/local/data/video");
     $videos = array();
 
@@ -6,17 +52,63 @@
         if (substr($file, -9, 9) == 'info.json') {
             $json = json_decode(file_get_contents("/usr/local/data/video/$file"));
 
-            var_dump($json);
+            $video = array();
+            $video['id'] = $json->id;
+            $video['title'] = $json->title;
+            $video['date'] = date('Y-m-d', strtotime($json->upload_date));
+            $video['thumbnail'] = $json->thumbnails[0]->url;
+
+            $videos[] = $video;
         }
     }
 ?>
 <html>
 <head>
     <title>New Task</title>
+
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-se
+        }
+
+        .row-video {
+            padding: 10px;
+            clear: both;
+        }
+
+        .vcheck {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .thumbnail {
+        }
+
+        .title {
+            vertical-align: top;
+        }
+
+        .date {
+            vertical-align: top;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="text" name="" id="" value="" />
+        <?php foreach ($videos as $video): ?>
+            <div class="row-video">
+                <h3 class="title"><?=$video['title']?></h3>
+                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" value="1" />
+                <img class="thumbnail" src="<?=$video['thumbnail']?>" width="100" />
+                <span class="date"><?=$video['date']?></span>
+            </div>
+        <?php endforeach;?>
+
+        <input type="file" name="template" />
+
+        <input type="submit" name="submit" value="Submit" />
     </form>
 </body>
 </html>

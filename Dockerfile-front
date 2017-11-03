@@ -1,0 +1,11 @@
+FROM ubuntu:xenial
+
+WORKDIR /var/www
+
+COPY etc/sources-xenial.list /etc/apt/sources.list
+RUN apt-get update; \
+    apt-get install -y apache2 php php-mcrypt libapache2-mod-php7.0 php-mysql php-gd; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
+
+CMD ["apachectl", "-D", "FOREGROUND"]
