@@ -4,7 +4,7 @@ services:
         image: "atw527/image-match:download"
         build:
             context: .
-            dockerfile: Dockerfile-match
+            dockerfile: Dockerfile-download
         volumes:
             - ./data:/usr/local
         command: ["bash", "/usr/local/bin/video-download.sh"]
