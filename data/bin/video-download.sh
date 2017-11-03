@@ -27,4 +27,14 @@ do
 done
 
 # report to Front which videos we can process
-#TODO
+#TODO (basically some rsync commands of the meta files)
+/usr/local/bin/ssh-test.exp andrew a01-docker-01
+
+if [ ! $? -eq 0 ]
+then
+    rsync data/video/*.json andrew@a01-docker-01:/home/andrew/go/src/github.com/image-match/data/video/
+    rsync data/video/*.description andrew@a01-docker-01:/home/andrew/go/src/github.com/image-match/data/video/
+    rsync data/video/*.jpg andrew@a01-docker-01:/home/andrew/go/src/github.com/image-match/data/video/
+else
+    echo "SSH test failed, can't reach Front.  Make sure the host exist and has out key."
+fi

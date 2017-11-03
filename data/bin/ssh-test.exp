@@ -1,0 +1,48 @@
+#!/usr/bin/expect
+
+if {[llength $argv] != 2} {
+	puts "usage: ssh_test.exp user host"
+	exit 3
+}
+
+log_user 0
+
+set user [lindex $argv 0]
+set host [lindex $argv 1]
+
+spawn ssh $user@$host
+
+expect {
+	"$user@$host" {
+		send "date > ~/.ssh_test\n"
+		sleep 0.25
+		send "exit\n"
+		puts "SSH test completed."
+		exit 0
+	}
+
+	"Password:" {
+		send \003
+		puts "Password prompt detected.  Check SSH keys."
+		exit 2
+	}
+
+	"Could not resolve hostname" {
+		puts "Could not resolve hostname."
+		exit 2
+	}
+
+	"No route to host" {
+		puts "No route to host."
+		exit 2
+	}
+
+	"ECDSA key fingerprint" {
+		send "no\n"
+		puts "Remote machine not in known_hosts file."
+		exit 2
+	}
+}
+
+puts "Unknown response."
+exit 3
