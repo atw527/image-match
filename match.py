@@ -88,7 +88,7 @@ for filename in sorted(filelist):
 
         except Exception, e:
             #print str(e)
-            #print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
+            print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
             #query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
             #args = (youtube_id, task_id, frame, filename)
             #x.execute(query, args)
