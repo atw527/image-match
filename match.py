@@ -24,8 +24,11 @@ conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="
 conn.autocommit(True)
 x = conn.cursor()
 
+dirs = next(os.walk('data/frames'))[1]
+dir_list = "'" + "', '".join(dirs) + "'"
+
 while True:
-    x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1")
+    x.execute("SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL && video_id IN (%s) LIMIT 1", dir_list)
     if x.rowcount == 1:
         break
     time.sleep(5)
