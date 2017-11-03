@@ -1,9 +1,15 @@
 #!/bin/bash
 
 # download mp4s and related meta
-youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames \
-    -o '/usr/local/video/%(id)s.%(ext)s' -f 137 \
-    -a /usr/local/bin/queue.txt
+if [ -f /usr/local/bin/queue.txt ]; then
+    echo queue file found, starting download
+
+    youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames \
+        -o '/usr/local/video/%(id)s.%(ext)s' -f 137 \
+        -a /usr/local/bin/queue.txt
+else
+    echo queue file NOT found, skipping download
+fi
 
 # blow up the filesystem with thousands of JPGs (extract video files for image comparison)
 cd /usr/local/video/

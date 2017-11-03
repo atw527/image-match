@@ -1,7 +1,10 @@
 version: "2"
 services:
     testdata:
-        image: "ubuntu:xenial"
+        image: "atw527/image-match:download"
+        build:
+            context: .
+            dockerfile: Dockerfile-match
         volumes:
             - ./data:/usr/local
         command: ["bash", "/usr/local/bin/video-download.sh"]
