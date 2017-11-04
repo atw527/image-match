@@ -2,10 +2,12 @@
     function getTS($filename) {
         list($frame, $ext) = explode('.', $filename);
 
+        $seconds = floor($frame / 10);
+
         $ts = new stdClass();
-        $ts->frame = $frame;
-        $ts->m = intdiv($frame, 60);
-        $ts->s = $frame % 60;
+        $ts->frame = $seconds;
+        $ts->m = intdiv($seconds, 60);
+        $ts->s = $seconds % 60;
 
         return $ts;
     }
