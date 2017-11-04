@@ -1,7 +1,7 @@
 <?php
     $db = mysqli_connect('a01-mysql-01', 'root', 'q1w2e3r4', 'image_match');
     $guid = mysqli_real_escape_string($db, $_GET['guid']);
-    $distance = isset($_GET['guid']) ? (int)$_GET['guid'] : 26;
+    $distance = isset($_GET['distance']) ? (int)$_GET['distance'] : 26;
 
     $sql = "SELECT * FROM tasks WHERE guid = '$guid'";
     $query = $db->query($sql);
@@ -17,7 +17,7 @@
 
     $ids = "'" . implode("', '", $task_ids) . "'";
 
-    $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) WHERE distance < $distance ORDER BY video_id, filename";
+    $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) && distance < $distance ORDER BY video_id, filename";
     $query = $db->query($sql);
     if (!$query) echo $sql;
 ?>
