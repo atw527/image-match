@@ -96,6 +96,10 @@
             vertical-align: top;
             color: #333;
         }
+        .video-id {
+            vertical-align: top;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +112,7 @@
                 <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" />
                 <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="<?=$video['thumbnail']?>" width="100" /></label>
                 <span class="date"><?=$video['date']?></span>
+                <span class="video-id"><?=$video['id']?></span>
             </div>
         <?php endforeach;?>
 

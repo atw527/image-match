@@ -80,6 +80,7 @@
         <span class="label">Completed:</span> <span class="value"><?=$task->completed?></span><br />
         <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->worker_host?></span><br />
         <span class="label">Video:</span> <span class="value"><?=$task->video_id?></span><br />
+        <span class="label">Exceptions:</span> <span class="value"><?=$task->exceptions?></span><br />
     </p>
 
     <div style="clear: both; padding: 5px; "></div>
