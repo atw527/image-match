@@ -23,7 +23,7 @@
     $task_ids = array();
     while ($row = $query->fetch_object()) {
         $tasks[$row->task_id] = $row;
-        $tasks[$row->task_id]['matches'] = array();
+        $tasks[$row->task_id]->matches = array();
         $task_ids[] = $row->task_id;
     }
 
@@ -39,9 +39,30 @@
         $ts = getTS($row->filename);
         $match->m = $ts->m;
         $match->s = $ts->s;
-        $tasks[$row->task_id]['matches'][] = $row;
+        $tasks[$row->task_id]->matches[] = $match;
     }
 ?>
+<html>
+<head>
+    <title>View Task</title>
+
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-se
+        }
+
+        .meta {
+            float: left;
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .task-image {
+            float: left;
+        }
+    </style>
+</head>
+<body>
 
 <a href="/new_task.php">New Task</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance-1?>">Decrease Distance</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance+1?>">Increase Distance</a>
 
@@ -50,7 +71,25 @@
 <img src="/templates/<?=$guid?>.jpg" width="400"/>
 
 <?php foreach ($tasks as $task): ?>
+    <hr id="<?=$task->video_id?>" style="clear: both; " />
+
+    <a href="https://youtu.be/<?=$task->video_id?>" class="task-image" target="_blank"><img src="/data/video/<?=$task->video_id?>.jpg" width="300" /></a>
+
+    <p class="meta">
+        <span class="label">Started:</span> <span class="value"><?=$task->started?></span><br />
+        <span class="label">Completed:</span> <span class="value"><?=$task->completed?></span><br />
+        <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->worker_host?></span><br />
+        <span class="label">Video:</span> <span class="value"><?=$task->video_id?></span><br />
+    </p>
+
+    <div style="clear: both; padding: 5px; "></div>
+
     <?php foreach ($task->matches as $match): ?>
-        <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video"><img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" /></a>
+        <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video">
+            <img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" />
+        </a>
     <?php endforeach; ?>
 <?php endforeach; ?>
+
+</body>
+</html>

@@ -43,6 +43,7 @@ youtube_id = row[2]
 youtube_path = "data/frames/" + youtube_id + "/"
 source_image = "/tmp/" + row[3]
 hostname = socket.gethostname()
+exceptions = 0
 
 if os.path.isfile("/etc/docker_hostname"):
     hostname = open("/etc/docker_hostname").read() + " " + hostname
@@ -98,12 +99,13 @@ for filename in sorted(filelist):
         except Exception, e:
             print str(e)
             print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
+            exceptions = exceptions + 1
             #query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
             #args = (youtube_id, task_id, frame, filename)
             #x.execute(query, args)
 
-query = "UPDATE tasks SET completed = %s WHERE task_id = %s LIMIT 1"
-args = (time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+query = "UPDATE tasks SET completed = %s, exceptions = %s WHERE task_id = %s LIMIT 1"
+args = (time.strftime('%Y-%m-%d %H:%M:%S'), exceptions, task_id)
 x.execute(query, args)
 
 run_time = (time.time() - start_time) / 60
