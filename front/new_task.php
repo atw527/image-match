@@ -58,9 +58,12 @@
             $video['date'] = date('Y-m-d', strtotime($json->upload_date));
             $video['thumbnail'] = $json->thumbnails[0]->url;
 
-            $videos[] = $video;
+            $videos[$json->upload_date] = $video;
         }
     }
+
+    ksort($videos);
+    $videos = array_reverse($videos);
 ?>
 <html>
 <head>
@@ -79,6 +82,7 @@
         .vcheck {
             display: table-cell;
             vertical-align: middle;
+            width: 2em;
         }
 
         .thumbnail {
@@ -96,17 +100,16 @@
 </head>
 <body>
     <form method="post" enctype="multipart/form-data">
-        <input type="text" name="" id="" value="" />
+        <label for="template">Image Template:</label>
+        <input type="file" name="template" id="template" />
         <?php foreach ($videos as $video): ?>
             <div class="row-video">
                 <h3 class="title"><?=$video['title']?></h3>
-                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" value="1" />
-                <img class="thumbnail" src="<?=$video['thumbnail']?>" width="100" />
+                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" />
+                <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="<?=$video['thumbnail']?>" width="100" /></label>
                 <span class="date"><?=$video['date']?></span>
             </div>
         <?php endforeach;?>
-
-        <input type="file" name="template" />
 
         <input type="submit" name="submit" value="Submit" />
     </form>

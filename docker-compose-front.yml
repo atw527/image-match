@@ -13,3 +13,4 @@ services:
             - ./front:/var/www/html
             - ./data:/usr/local/data
             - ./etc/php.ini:/etc/php/7.0/apache2/php.ini
+            - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf
