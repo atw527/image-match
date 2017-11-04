@@ -49,8 +49,8 @@
 
 <img src="/templates/<?=$guid?>.jpg" width="400"/>
 
-<?php foreach ($tasks as $task: ?>
-    <?php foreach ($task->matches as $match: ?>
+<?php foreach ($tasks as $task): ?>
+    <?php foreach ($task->matches as $match): ?>
         <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video"><img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" /></a>
     <?php endforeach; ?>
 <?php endforeach; ?>
