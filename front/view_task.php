@@ -87,7 +87,7 @@
 
     <?php foreach ($task->matches as $match): ?>
         <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video">
-            <img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" />
+            <img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" title="Distance: <?=$match->distance?>" />
         </a>
     <?php endforeach; ?>
 <?php endforeach; ?>
