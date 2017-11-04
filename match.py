@@ -1,5 +1,6 @@
 import cv2
 import os
+import os.path
 import MySQLdb
 import datetime
 import sys
@@ -41,12 +42,16 @@ task_guid = row[1]
 youtube_id = row[2]
 youtube_path = "data/frames/" + youtube_id + "/"
 source_image = "/tmp/" + row[3]
+hostname = socket.gethostname()
 
-os.system("wget -O /tmp/" + row[3] + " http://a01-docker-01:8088/templates/" + row[3])
+if os.path.isfile("/etc/docker_hostname"):
+    hostname = open("/etc/docker_hostname").read() + " " + hostname
 
 query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
-args = (socket.gethostname(), time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+args = (hostname, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
+
+os.system("wget -O /tmp/" + row[3] + " http://a01-docker-01:8088/templates/" + row[3])
 
 img1 = cv2.imread(source_image, 0)          # queryImage
 

@@ -7,6 +7,7 @@ services:
             context: .
             dockerfile: Dockerfile-match
         volumes:
+            - /etc/hostname:/etc/docker_hostname:ro
             - ./data:/usr/local/data
             - ./match-forever.sh:/usr/local/match-forever.sh
             - ./match.py:/usr/local/match.py
