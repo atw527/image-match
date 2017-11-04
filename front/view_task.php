@@ -2,7 +2,7 @@
     function getTS($filename) {
         list($frame, $ext) = explode('.', $filename);
 
-        $ts = stdClass;
+        $ts = new stdClass();
         $ts->frame = $frame;
         $ts->m = intdiv($frame, 60);
         $ts->s = $frame % 60;
