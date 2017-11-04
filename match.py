@@ -51,7 +51,7 @@ query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMI
 args = (hostname, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 
-os.system("wget -O /tmp/" + row[3] + " http://a01-docker-01:8088/templates/" + row[3])
+os.system("wget -O /tmp/" + row[3] + " http://server-10:8088/templates/" + row[3])
 
 img1 = cv2.imread(source_image, 0)          # queryImage
 
@@ -96,7 +96,7 @@ for filename in sorted(filelist):
                 #conn.commit()
 
         except Exception, e:
-            #print str(e)
+            print str(e)
             print "Exception: ", youtube_path, filename, source_image, task_id, frame, filename
             #query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
             #args = (youtube_id, task_id, frame, filename)

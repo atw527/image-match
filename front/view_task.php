@@ -12,6 +12,8 @@
         $task_ids[] = $row->task_id;
     }
 
+    sort($task_ids);
+
     $ids = "'" . implode("', '", $task_ids) . "'";
 
     $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) ORDER BY video_id, filename";
