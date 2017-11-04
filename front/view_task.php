@@ -22,7 +22,8 @@
     $tasks = array();
     $task_ids = array();
     while ($row = $query->fetch_object()) {
-        $task[$row->task_id] = $row;
+        $tasks[$row->task_id] = $row;
+        $tasks[$row->task_id]['matches'] = array();
         $task_ids[] = $row->task_id;
     }
 
@@ -33,6 +34,13 @@
     $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) && distance < $distance ORDER BY video_id, filename";
     $query = $db->query($sql);
     if (!$query) echo $sql;
+    while ($row = $query->fetch_object()) {
+        $match = $row;
+        $ts = getTS($row->filename);
+        $match->m = $ts->m;
+        $match->s = $ts->s;
+        $tasks[$row->task_id]['matches'][] = $row;
+    }
 ?>
 
 <a href="/new_task.php">New Task</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance-1?>">Decrease Distance</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance+1?>">Increase Distance</a>
@@ -41,6 +49,8 @@
 
 <img src="/templates/<?=$guid?>.jpg" width="400"/>
 
-<?php while ($row = $query->fetch_object()): $ts = getTS($row->filename); ?>
-    <a href="https://youtu.be/<?=$row->video_id?>?t=<?=$ts->m?>m<?=$ts->s?>s" target="_video"><img src="/data/frames/<?=$row->video_id?>/<?=$row->filename?>" width="200" /></a>
-<?php endwhile; ?>
+<?php foreach ($tasks as $task: ?>
+    <?php foreach ($task->matches as $match: ?>
+        <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video"><img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" /></a>
+    <?php endforeach; ?>
+<?php endforeach; ?>
