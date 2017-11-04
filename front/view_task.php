@@ -19,6 +19,7 @@
 
     $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) WHERE distance < $distance ORDER BY video_id, filename";
     $query = $db->query($sql);
+    if ($query) echo $sql;
 ?>
 
 <img src="/templates/<?=$guid?>.jpg" width="400"/>
