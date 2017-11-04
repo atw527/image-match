@@ -1,4 +1,15 @@
 <?php
+    function getTS($filename) {
+        list($frame, $ext) = explode('.', $filename);
+
+        $ts = stdClass;
+        $ts->frame = $frame;
+        $ts->m = intdiv($frame, 60);
+        $ts->s = $frame % 60;
+
+        return $ts;
+    }
+
     $db = mysqli_connect('a01-mysql-01', 'root', 'q1w2e3r4', 'image_match');
     $guid = mysqli_real_escape_string($db, $_GET['guid']);
     $distance = isset($_GET['distance']) ? (int)$_GET['distance'] : 26;
@@ -22,8 +33,12 @@
     if (!$query) echo $sql;
 ?>
 
+<a href="/new_task.php">New Task</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance-1?>">Decrease Distance</a> | <a href="?guid=<?=$guid?>&distance=<?=$distance+1?>">Increase Distance</a>
+
+<hr />
+
 <img src="/templates/<?=$guid?>.jpg" width="400"/>
 
-<?php while ($row = $query->fetch_object()): ?>
-    <img src="/data/frames/<?=$row->video_id?>/<?=$row->filename?>" width="200" />
+<?php while ($row = $query->fetch_object()): $ts = getTS($row->filename); ?>
+    <a href="https://youtu.be/<?=$row->video_id?>?t=<?=$ts->m?>m<?=$ts->s?>s" target="_video"><img src="/data/frames/<?=$row->video_id?>/<?=$row->filename?>" width="200" /></a>
 <?php endwhile; ?>

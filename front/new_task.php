@@ -40,7 +40,7 @@
             $db->query($sql);
         }
 
-        header('Location: view_task.php?guid=' . $guid);
+        header('Location: view_task.php?guid=' . $guid . "&distance=20");
 
         exit();
     }
