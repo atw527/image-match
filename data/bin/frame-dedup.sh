@@ -3,7 +3,7 @@
 cd "${0%/*}"
 cd ..
 
-for f in *.mp4
+for f in ./video/*.mp4
 do
     dir="${f%.*}"
 	if [ -d "./frames/$dir" ]; then
