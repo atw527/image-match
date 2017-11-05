@@ -10,7 +10,7 @@ do
 	if [ -d "../frames/$dir" ]; then
         uptime
         echo $dir filter out duplicate frames...
-        ../bin/duplicates.php "../frames/$dir"
+        ../bin/frame-dedup.php "../frames/$dir"
         echo $dir filter complete!
     else
         echo "$dir does not exist for some reason"
