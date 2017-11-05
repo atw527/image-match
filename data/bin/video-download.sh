@@ -21,6 +21,9 @@ do
         mkdir /usr/local/frames/$dir
         ffmpeg -i /usr/local/video/$f -r 10/1 -f image2 /usr/local/frames/$dir/%6d.jpg > /dev/null
         echo $dir frame build complete!
+        echo $dir filter out duplicate frames...
+        /usr/local/bin/duplicates.php "/usr/local/frames/$dir"
+        echo $dir filter complete!
     else
         echo $dir exists
     fi
