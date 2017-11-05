@@ -1,6 +1,6 @@
 version: "2"
 services:
-    testdata:
+    front:
         image: "atw527/image-match:front"
         build:
             context: .
