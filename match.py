@@ -42,7 +42,6 @@ task_guid = row[1]
 youtube_id = row[2]
 youtube_path = "data/frames/" + youtube_id + "/"
 source_image = "/tmp/" + row[3]
-hostname = socket.gethostname()
 exceptions = 0
 
 if os.path.isfile("/etc/docker_hostname"):
