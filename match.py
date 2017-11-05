@@ -46,9 +46,13 @@ hostname = socket.gethostname()
 exceptions = 0
 
 if os.path.isfile("/etc/docker_hostname"):
-    hostname = open("/etc/docker_hostname").read() + " " + hostname
+    hostname = open("/etc/docker_hostname").read()
+    container = socket.gethostname()
+else:
+    hostname = socket.gethostname()
+    container = ""
 
-query = "UPDATE tasks SET worker_host = %s, started = %s WHERE task_id = %s LIMIT 1"
+query = "UPDATE tasks SET worker_host = %s, container = %s, started = %s WHERE task_id = %s LIMIT 1"
 args = (hostname, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 

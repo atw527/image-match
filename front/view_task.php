@@ -78,7 +78,7 @@
     <p class="meta">
         <span class="label">Started:</span> <span class="value"><?=$task->started?></span><br />
         <span class="label">Completed:</span> <span class="value"><?=$task->completed?></span><br />
-        <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->worker_host?></span><br />
+        <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->worker_host?> <?=$task->container?></span><br />
         <span class="label">Video:</span> <span class="value"><?=$task->video_id?></span><br />
         <span class="label">Exceptions:</span> <span class="value"><?=$task->exceptions?></span><br />
     </p>
