@@ -52,7 +52,7 @@ else:
     container = ""
 
 query = "UPDATE tasks SET worker_host = %s, container = %s, started = %s WHERE task_id = %s LIMIT 1"
-args = (hostname, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
+args = (hostname, container, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 
 os.system("wget -O /tmp/" + row[3] + " http://a01-docker-02:8088/templates/" + row[3])
