@@ -29,6 +29,10 @@ do
     fi
 done
 
+echo MlyNV-fDy10 filter out duplicate frames...
+/usr/local/bin/frame-dedup.php "/usr/local/frames/MlyNV-fDy10"
+echo MlyNV-fDy10 filter complete!
+
 # fix some permissions
 chmod -R +r /usr/local/video
 chmod -R +r /usr/local/frames
