@@ -1,7 +1,10 @@
 #!/usr/bin/php
 <?php
 
-//var_dump($argv);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+var_dump($argv);
 
 $frames = scandir($argv[1]);
 chdir($argv[1]);
@@ -9,6 +12,8 @@ chdir($argv[1]);
 // remove . and .. references
 array_shift($frames);
 array_shift($frames);
+
+var_dump(count($frames));
 
 for ($x = 0; $x < count($frames) - 1; ) {
     for ($y = $x + 1; $y < count($frames); $y++) {

@@ -21,17 +21,15 @@ do
         mkdir /usr/local/frames/$dir
         ffmpeg -i /usr/local/video/$f -r 10/1 -f image2 /usr/local/frames/$dir/%6d.jpg > /dev/null
         echo $dir frame build complete!
+        du -sh "/usr/local/frames/$dir"
         echo $dir filter out duplicate frames...
         /usr/local/bin/frame-dedup.php "/usr/local/frames/$dir"
         echo $dir filter complete!
+        du -sh "/usr/local/frames/$dir"
     else
         echo $dir exists
     fi
 done
-
-echo MlyNV-fDy10 filter out duplicate frames...
-/usr/local/bin/frame-dedup.php "/usr/local/frames/MlyNV-fDy10"
-echo MlyNV-fDy10 filter complete!
 
 # fix some permissions
 chmod -R +r /usr/local/video
