@@ -8,7 +8,7 @@ RUN apt-get update; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl; \
-    chmod a+rx /usr/local/bin/youtube-dl
+RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/bin/youtube-dl; \
+    chmod a+rx /usr/bin/youtube-dl
 
 CMD ["bash", "/usr/local/bin/video_download.sh"]
