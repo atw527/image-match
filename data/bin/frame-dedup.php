@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-var_dump($argv);
+//var_dump($argv);
 
 $frames = scandir($argv[1]);
 chdir($argv[1]);
