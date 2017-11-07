@@ -7,6 +7,7 @@ import signal
 import time
 import socket
 import subprocess
+import re
 import numpy as np
 from functools import partial
 
@@ -75,21 +76,13 @@ frames = os.listdir("frames/{0}".format(video_id))
 for x in range(0, len(frames) - 1):
     for y in range(x + 1, len(frames)):
         output = subprocess.check_output("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), shell=True)
+        diff = int(re.search('[0-9]+', output).group())
 
-
-for ($x = 0; $x < count($frames) - 1; ) {
-    for ($y = $x + 1; $y < count($frames); $y++) {
-        $diff = shell_exec("compare -metric RMSE $frames[$x] $frames[$y] NULL: 2>&1");
-
-        if ($diff < 5000 && $diff != 0) {
-            unlink($frames[$y]);
-            //echo "Deleted $frames[$y] \n";
-        } else {
-            $x = $y;
-            break;
-        }
-    }
-}
+        if diff < 5000 && diff != 0:
+            os.remove("frames/{0}.jpg".format(frames[y]))
+        else:
+            x = y
+            break
 
 # copy frames back to server-13
 print "Copying frames back to server-13...", video_id
