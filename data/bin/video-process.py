@@ -81,16 +81,19 @@ frames = os.listdir("frames/{0}".format(video_id))
 
 for x in range(0, len(frames) - 1):
     for y in range(x + 1, len(frames)):
-        output = subprocess.check_output("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), shell=True)
-        diff = int(re.search('[0-9]+', output).group())
+        try:
+            output = subprocess.check_output("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), shell=True)
+            diff = int(re.search('[0-9]+', output).group())
 
-        if diff < 5000 and diff != 0:
-            # frame is similar enough to remove
-            os.remove("frames/{0}.jpg".format(frames[y]))
-        else:
-            # frame has changed, set this as the new starting point
-            x = y
-            break
+            if diff < 5000 and diff != 0:
+                # frame is similar enough to remove
+                os.remove("frames/{0}.jpg".format(frames[y]))
+            else:
+                # frame has changed, set this as the new starting point
+                x = y
+                break
+        except Exception, e:
+            continue
 
 # copy frames back to server-13
 print "[{0}] Copying frames back to server-13...".format(video_id)
