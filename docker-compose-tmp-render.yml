@@ -2,6 +2,7 @@ version: "2.2"
 services:
     tmp-render:
         image: "atw527/image-match:tmp-render"
+        restart: always
         build:
             context: .
             dockerfile: Dockerfile-tmp-render
