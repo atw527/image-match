@@ -90,5 +90,5 @@ echo "Done!\n";
 echo "Copying frames back to server-13...\n";
 chdir(dirname(__FILE__));
 chdir('..');
-shell_exec("rsync frames/$video_id andrew@server-13:/home/andrew/go/src/github.com/atw527/image-match/data/frames/");
+shell_exec("rsync -a frames/$video_id andrew@server-13:/home/andrew/go/src/github.com/atw527/image-match/data/frames/");
 echo "Done!\n";
