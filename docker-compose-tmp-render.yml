@@ -1,0 +1,12 @@
+version: "2.2"
+services:
+    tmp-render:
+        image: "atw527/image-match:tmp-render"
+        build:
+            context: .
+            dockerfile: Dockerfile-tmp-render
+        volumes:
+            - /etc/hostname:/etc/docker_hostname:ro
+            - /home/andrew/.ssh/id_rsa:/root/.ssh/id_rsa_host:ro
+            - ./data:/usr/local
+        command: ["php", "/usr/local/bin/tmp-frame-process.php"]

@@ -1,0 +1,5 @@
+Host *
+    CheckHostIP no
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    IdentityFile /root/.ssh/id_rsa
