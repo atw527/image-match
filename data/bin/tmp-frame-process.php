@@ -3,6 +3,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+echo "Depracated!";
+sleep(1800);
+die();
+
 function stahp($signo) {
     global $db, $video_id;
     $query = "UPDATE encode SET host = null WHERE video_id = '$video_id' LIMIT 1";
