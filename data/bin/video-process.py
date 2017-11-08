@@ -91,11 +91,11 @@ while True:
             # frame is similar enough to remove
             os.remove("frames/{0}/{1}".format(video_id, frames[y]))
             print "[del] frames/{0}/{1}".format(video_id, frames[y]), output, diff
-            y++
+            y += 1
         else:
             # frame has changed, set this as the new starting point
             x = y
-            y++
+            y += 1
 
         if y > frame_count:
             break;
@@ -104,7 +104,7 @@ while True:
         print str(e), frames[x], frames[y]
         # reset the frame indexes to try to get out of this exception
         x = y
-        y++
+        y += 1
         continue
 
 # copy frames back to server-13
