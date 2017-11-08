@@ -96,7 +96,7 @@ while True:
         if diff < 5000 and diff != 0:
             # frame is similar enough to remove
             os.remove(frames[y])
-            print "[del] {0}".format(frames[y]), return_val, diff, output
+            #print "[del] {0}".format(frames[y]), return_val, diff, output
             y += 1
         else:
             # frame has changed, set this as the new starting point
