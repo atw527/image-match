@@ -10,6 +10,7 @@ import commands
 import re
 import numpy as np
 from functools import partial
+from random import randint
 
 def signal_handler(video_id, x, conn, signal, frame):
         print('Shuting down...')
@@ -42,7 +43,7 @@ else:
     container = None
 
 while True:
-    time.sleep(5)
+    time.sleep(randint(5,10))
     sql = "SELECT video_id FROM encode WHERE host IS NULL LIMIT 1"
     x.execute(sql)
     if x.rowcount == 1:
