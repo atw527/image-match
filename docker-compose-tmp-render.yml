@@ -8,6 +8,6 @@ services:
             dockerfile: Dockerfile-tmp-render
         volumes:
             - /etc/hostname:/etc/docker_hostname:ro
-            - /home/andrew/.ssh/id_rsa:/root/.ssh/id_rsa_host:ro
+            - /home/andrew/.ssh/id_rsa:/root/.ssh/id_rsa:ro
             - ./data:/usr/local
-        command: ["php", "/usr/local/bin/tmp-frame-process.php"]
+        command: ["python", "/usr/local/bin/video-process.py"]

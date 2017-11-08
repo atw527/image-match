@@ -5,7 +5,7 @@ import sys
 import os.path
 import commands
 
-video_id = "a3D8bLacGHA"
+video_id = "ruZ2v27KHCE"
 
 # dedup
 print "[{0}] Running dedup...".format(video_id)
