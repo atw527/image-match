@@ -3,21 +3,22 @@ import os
 import re
 import sys
 import os.path
-import subprocess
+import commands
 
-video_id = "ruZ2v27KHCE"
+video_id = "a3D8bLacGHA"
 
 # dedup
 print "[{0}] Running dedup...".format(video_id)
 
 os.chdir("frames/{0}".format(video_id))
-frames = os.listdir(".")
+frames = sorted(os.listdir("."))
 
 for x in range(0, len(frames) - 1):
     for y in range(x + 1, len(frames)):
+        print x, y
         try:
             # subprocess.run?
-            output = subprocess.check_output("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), shell=True)
+            (return_val, output) = commands.getstatusoutput("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]))
             diff = int(re.search('[0-9]+', output).group())
 
             print "compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), output,  diff
