@@ -48,7 +48,7 @@ if os.path.isfile("/etc/docker_hostname"):
     container = socket.gethostname()
 else:
     hostname = socket.gethostname()
-    container = ""
+    container = None
 
 query = "UPDATE encode SET host = %s, container = %s WHERE video_id = %s LIMIT 1"
 args = (hostname, container, video_id)
