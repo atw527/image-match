@@ -87,7 +87,7 @@ for x in range(0, len(frames) - 1):
 
             if diff < 5000 and diff != 0:
                 # frame is similar enough to remove
-                os.remove("frames/{0}.jpg".format(frames[y]))
+                os.remove("frames/{0}".format(frames[y]))
             else:
                 # frame has changed, set this as the new starting point
                 x = y
