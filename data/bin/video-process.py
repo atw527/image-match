@@ -90,7 +90,7 @@ while x < len(frames) - 1:
             if diff < 5000 and diff != 0:
                 # frame is similar enough to remove
                 os.remove("frames/{0}/{1}".format(video_id, frames[y]))
-                print "[del] frames/{0}/{1}".format(video_id, frames[y])
+                print "[del] frames/{0}/{1}".format(video_id, frames[y]), output, diff
                 y = y + 1
             else:
                 # frame has changed, set this as the new starting point
