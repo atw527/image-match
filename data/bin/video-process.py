@@ -77,7 +77,10 @@ os.system("ffmpeg -i video/{0}.mp4 -r 10/1 -f image2 frames/{0}/%6d.jpg > /dev/n
 
 # dedup
 print "[{0}] Running dedup...".format(video_id)
-frames = sorted(os.listdir("frames/{0}".format(video_id)))
+
+os.chdir("frames/{0}".format(video_id))
+
+frames = sorted(os.listdir("."))
 frame_count = len(frames)
 
 x = 0
@@ -89,8 +92,8 @@ while True:
 
         if diff < 5000 and diff != 0:
             # frame is similar enough to remove
-            os.remove("frames/{0}/{1}".format(video_id, frames[y]))
-            print "[del] frames/{0}/{1}".format(video_id, frames[y]), output, diff
+            os.remove(frames[y])
+            print "[del] {0}".format(frames[y]), return_val, diff, output
             y += 1
         else:
             # frame has changed, set this as the new starting point
@@ -106,6 +109,8 @@ while True:
         x = y
         y += 1
         continue
+
+os.chdir("../../")
 
 # copy frames back to server-13
 print "[{0}] Copying frames back to server-13...".format(video_id)
