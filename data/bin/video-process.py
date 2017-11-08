@@ -6,7 +6,7 @@ import sys
 import signal
 import time
 import socket
-import subprocess
+import commands
 import re
 import numpy as np
 from functools import partial
@@ -82,7 +82,7 @@ frames = os.listdir("frames/{0}".format(video_id))
 for x in range(0, len(frames) - 1):
     for y in range(x + 1, len(frames)):
         try:
-            output = subprocess.check_output("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]), shell=True)
+            (return_val, output) = commands.getstatusoutput("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]))
             diff = int(re.search('[0-9]+', output).group())
 
             if diff < 5000 and diff != 0:
