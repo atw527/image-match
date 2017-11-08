@@ -30,6 +30,17 @@ conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="
 conn.autocommit(True)
 x = conn.cursor()
 
+os.chdir(os.path.dirname(sys.argv[0]))
+os.chdir("..")
+
+if os.path.isfile("/etc/docker_hostname"):
+    hostname = open("/etc/docker_hostname").read()
+    hostname = hostname.strip()
+    container = socket.gethostname()
+else:
+    hostname = socket.gethostname()
+    container = None
+
 while True:
     time.sleep(5)
     sql = "SELECT video_id FROM encode WHERE host IS NULL LIMIT 1"
@@ -39,16 +50,6 @@ while True:
 
 row = x.fetchone()
 video_id = row[0]
-
-os.chdir(os.path.dirname(sys.argv[0]))
-os.chdir("..")
-
-if os.path.isfile("/etc/docker_hostname"):
-    hostname = open("/etc/docker_hostname").read()
-    container = socket.gethostname()
-else:
-    hostname = socket.gethostname()
-    container = None
 
 query = "UPDATE encode SET host = %s, container = %s WHERE video_id = %s LIMIT 1"
 args = (hostname, container, video_id)
