@@ -87,6 +87,9 @@ x = 0
 y = 1
 while True:
     try:
+        if y > frame_count - 5 or x > frame_count - 5:
+            break
+
         (return_val, output) = commands.getstatusoutput("compare -metric RMSE {0} {1} NULL: 2>&1".format(frames[x], frames[y]))
         diff = int(re.search('[0-9]+', output).group())
 
@@ -100,11 +103,8 @@ while True:
             x = y
             y += 1
 
-        if y > frame_count:
-            break;
-
     except Exception, e:
-        print str(e), frames[x], frames[y]
+        print str(e)
         # reset the frame indexes to try to get out of this exception
         x = y
         y += 1
