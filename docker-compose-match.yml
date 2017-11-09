@@ -8,6 +8,7 @@ services:
             dockerfile: Dockerfile-match
         volumes:
             - /etc/hostname:/etc/docker_hostname:ro
+            - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
             - ./data:/usr/local/data
             - ./match-forever.sh:/usr/local/match-forever.sh
             - ./match.py:/usr/local/match.py

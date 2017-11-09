@@ -2,6 +2,10 @@ FROM ubuntu:xenial
 
 WORKDIR /usr/local
 
+COPY etc/ssh_config /root/.ssh/config
+RUN chown -R root: /root/.ssh
+RUN chmod 0600 /root/.ssh/*
+
 COPY etc/sources-xenial.list /etc/apt/sources.list
 RUN apt-get update; \
     apt-get install -y python wget python-opencv python-mysqldb python-matplotlib; \
