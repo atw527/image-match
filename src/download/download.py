@@ -23,6 +23,14 @@ def signal_handler(video_id, x, conn, signal, frame):
             os.system("rm -f video/" + video_id + "*")
         sys.exit(0)
 
+# verify/make the env var sane
+ENV_MASTER     = os.getenv('MASTER', 'server-13')
+ENV_MYSQL_HOST = os.getenv('MYSQL_HOST', 'a01-mysql-01')
+ENV_MYSQL_PORT = os.getenv('MYSQL_PORT', 3306)
+ENV_MYSQL_DB   = os.getenv('MYSQL_DB', 'image_match')
+ENV_MYSQL_USER = os.getenv('MYSQL_USER', 'root')
+ENV_MYSQL_PASS = os.getenv('MYSQL_PASS', 'q1w2e3r4')
+
 # try to figure out our current situation
 if os.path.isdir("/usr/local/data"):
     print "I think I'm in a docker container"
@@ -44,23 +52,21 @@ else:
     container = None
 
 # determine if master/slave
-if "MASTER" in os.environ:
-    if os.environ['MASTER'] == hostname:
-        print "I am MASTER!"
-        is_master = True
-    else:
-        print "I am slave"
-        print "This module is designed for the master node only."
-        is_master = False
-        exit(1)
+if os.environ['MASTER'] == hostname:
+    print "I am MASTER!"
+    is_master = True
 else:
-    print "Need to set MASTER environment variable!"
+    print "I am slave"
+    print "This module is designed for the master node only."
+    is_master = False
     exit(1)
 
-conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
+# ready to roll, connect to DB
+conn = MySQLdb.connect(host=ENV_MYSQL_HOST, user=ENV_MYSQL_USER, passwd=ENV_MYSQL_PASS, db=ENV_MYSQL_DB)
 conn.autocommit(True)
 x = conn.cursor()
 
+# wait patiently for something to do
 while True:
     time.sleep(randint(5,10))
     sql = "SELECT video_id FROM download WHERE host IS NULL LIMIT 1"
