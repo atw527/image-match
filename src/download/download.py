@@ -46,10 +46,10 @@ else:
 # determine if master/slave
 if "MASTER" in os.environ:
     if os.environ['MASTER'] == hostname:
-        print "✓ I am MASTER!"
+        print "I am MASTER!"
         is_master = True
     else:
-        print "✗ I am slave"
+        print "I am slave"
         print "This module is designed for the master node only."
         is_master = False
         exit(1)
