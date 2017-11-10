@@ -1,0 +1,21 @@
+version: "2.2"
+services:
+    tmp-render:
+        image: "atw527/im-render"
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile-tmp-render
+        volumes:
+            - /etc/hostname:/etc/docker_hostname:ro
+            - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+            - ./data:/usr/local/data
+            - ./src/render:/usr/local/bin
+        environment:
+            MASTER: "server-13"
+            MYSQL_HOST: "a01-mysql-01"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"
+        command: ["bash", "/usr/local/bin/render-forever.sh"]
