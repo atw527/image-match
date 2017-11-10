@@ -1,19 +1,8 @@
 # Download and Build Test Data
 
-This process will fill up 50G and over 560k files with the current queue file (11G bandwidth, rest is processing).  If another local machine has this data, it will be better to rsync it over.
-
-Otherwise, the download scripts run in a Docker container, so to not install temp software on the host machine.
-
-```bash
-#[user]$
-docker-compose -f docker-compose-video-download.yml up
-```
-
-This image will download the tools to process the video downloads and frame extraction.  It will take some time to run and stop automatically when complete.
-
-Since the only output is in stdout of docker-compose, ffmpeg and youtube-dl don't report progress very well.  Run `du -sh` on the data folders to see their current size and get an idea of progress.  The `video` folder will grow first, followed by the `frames` folder.
-
-Once complete, there will be a rather large `./data/video` and `./data/frames` folders.
+- Add data to `download` table
+- Fire up `docker-compose.download.yml` on master
+- Fire up `docker-compose.render.yml` on master (spin up additional slaves to help this go faster)
 
 # Server Layout
 
@@ -26,3 +15,31 @@ The `front` instance powers the web interface and should be ran on the server bo
 ## Slaves
 
 Slaves don't need to contain anything in `data/video`.  Tasks will run faster if they are able to hold copies of `data/frames`, requiring > 50G available storage.
+
+# Startup Commands
+
+The master will be running front, download, and maybe the processing modules.
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml up --build
+```
+
+Any of the slaves will be running multiple instances of either of the processing modules.
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.render.yml up --build --scale im-render=2
+```
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.match.yml up --build --scale im-match=2
+```
+
+This next example runs both processing modules on the same host.  The load could get high if both have tasks to do.
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.match.yml -f docker-compose.render.yml up --build --scale im-match=2 im-render=2
+```
