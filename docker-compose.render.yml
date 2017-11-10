@@ -1,11 +1,11 @@
 version: "2.2"
 services:
-    tmp-render:
+    im-render:
         image: "atw527/im-render"
         restart: always
         build:
             context: .
-            dockerfile: Dockerfile-tmp-render
+            dockerfile: Dockerfile.render
         volumes:
             - /etc/hostname:/etc/docker_hostname:ro
             - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro

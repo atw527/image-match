@@ -11,25 +11,79 @@ import numpy as np
 from functools import partial
 from matplotlib import pyplot as plt
 
-def signal_handler(task_id, x, conn, signal, frame, dl_required):
-        print('Shuting down...')
+def fail_log(task_id, video_id, dl_required, notes):
+    # had a critical failure; log some stuff and shutdown
+    if video_id != "" and dl_required:
+        os.system("rm -f data/frames/" + video_id + "/*.jpg")
+        os.system("rmdir data/frames/" + video_id)
 
-        query = "DELETE FROM image_matches_bf WHERE task_id = " + str(task_id)
-        x.execute(query)
-        query = "UPDATE tasks SET worker_host = null, started = null, completed = null WHERE task_id = " + str(task_id) + " LIMIT 1"
-        x.execute(query)
+     query = "DELETE FROM image_matches_bf WHERE task_id = {0}".format(task_id)
+     x.execute(query)
 
-        if video_id != "" and dl_required:
-            os.system("rm -f data/frames/" + video_id + "/*.jpg")
-            os.system("rmdir data/frames/" + video_id)
+     query = "UPDATE tasks SET completed = %s, notes = %s WHERE task_id = %s LIMIT 1"
+     args = (time.strftime('%Y-%m-%d %H:%M:%S'), notes, task_id)
+     x.execute(query, args)
 
-        sys.exit(0)
+    sys.exit(1)
 
-conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
+def signal_handler(task_id, x, conn, dl_required, signal, frame):
+    print('Shuting down...')
+
+    query = "DELETE FROM image_matches_bf WHERE task_id = " + str(task_id)
+    x.execute(query)
+    query = "UPDATE tasks SET host = null, started = null, completed = null WHERE task_id = " + str(task_id) + " LIMIT 1"
+    x.execute(query)
+
+    if video_id != "" and dl_required:
+        os.system("rm -f data/frames/" + video_id + "/*.jpg")
+        os.system("rmdir data/frames/" + video_id)
+
+    sys.exit(0)
+
+# verify/make the env var sane
+ENV_MASTER     = os.getenv('MASTER', 'server-13')
+ENV_MYSQL_HOST = os.getenv('MYSQL_HOST', 'a01-mysql-01')
+ENV_MYSQL_PORT = os.getenv('MYSQL_PORT', 3306)
+ENV_MYSQL_DB   = os.getenv('MYSQL_DB', 'image_match')
+ENV_MYSQL_USER = os.getenv('MYSQL_USER', 'root')
+ENV_MYSQL_PASS = os.getenv('MYSQL_PASS', 'q1w2e3r4')
+
+# try to figure out our current situation
+if os.path.isdir("/usr/local/data"):
+    print "I think I'm in a docker container"
+    os.chdir("/usr/local/data")
+elif os.path.isdir("/home/andrew/go/src/github.com/atw527/image-match/data"):
+    print "I think I'm being ran locally"
+    os.chdir("/home/andrew/go/src/github.com/atw527/image-match/data")
+else:
+    print "Cannot find working directory!"
+    sys.exit(1)
+
+# get the hostname(s)
+if os.path.isfile("/etc/docker_hostname"):
+    hostname = open("/etc/docker_hostname").read()
+    hostname = hostname.strip()
+    container = socket.gethostname()
+else:
+    hostname = socket.gethostname()
+    container = None
+
+# determine if master/slave
+if os.environ['MASTER'] == hostname:
+    print "I am MASTER!"
+    is_master = True
+else:
+    print "I am slave"
+    print "This module is designed for the master node only."
+    is_master = False
+    exit(1)
+
+# ready to roll, connect to DB
+conn = MySQLdb.connect(host=ENV_MYSQL_HOST, user=ENV_MYSQL_USER, passwd=ENV_MYSQL_PASS, db=ENV_MYSQL_DB)
 conn.autocommit(True)
 x = conn.cursor()
 
-dirs = next(os.walk('data/frames'))[1]
+dirs = next(os.walk('frames'))[1]
 dir_list = "'" + "', '".join(dirs) + "'"
 
 while True:
@@ -54,7 +108,7 @@ row = x.fetchone()
 task_id = row[0]
 task_guid = row[1]
 video_id = row[2]
-video_path = "data/frames/" + video_id + "/"
+video_path = "frames/" + video_id + "/"
 source_image = "/tmp/" + row[3]
 exceptions = 0
 
@@ -66,7 +120,7 @@ else:
     hostname = socket.gethostname()
     container = None
 
-query = "UPDATE tasks SET worker_host = %s, container = %s, started = %s WHERE task_id = %s LIMIT 1"
+query = "UPDATE tasks SET host = %s, container = %s, started = %s WHERE task_id = %s LIMIT 1"
 args = (hostname, container, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
 x.execute(query, args)
 
@@ -79,14 +133,17 @@ signal.signal(signal.SIGTERM, partial(signal_handler, task_id, x, conn, dl_requi
 if dl_required:
     # fetch copy of frames
     print "[{0}] Copying frames from master...".format(video_id)
-    os.system("rsync -a andrew@server-13:/home/andrew/go/src/github.com/atw527/image-match/data/frames/ data/frames/{0}".format(video_id))
+    (return_val, output) = commands.getstatusoutput("rsync -a andrew@{0}:/home/andrew/go/src/github.com/atw527/image-match/data/frames/ data/frames/{1}".format(ENV_MASTER, video_id))
+    if return_val != 0:
+        fail_log(task_id, video_id, dl_required, output)
 
 # fetch template image
 print "[{0}] Copying image template from master...".format(video_id)
-os.system("wget -O /tmp/" + row[3] + " http://server-13:8088/templates/" + row[3])
-img1 = cv2.imread(source_image, 0)          # queryImage
+(return_val, output) = commands.getstatusoutput("wget -O /tmp/{0} http://{1}:8088/templates/{0}".format(row[3], ENV_MASTER)
+if return_val != 0:
+    fail_log(task_id, video_id, dl_required, output)
 
-# Initiate ORB detector
+img1 = cv2.imread(source_image, 0)
 orb = cv2.ORB()
 
 filelist = os.listdir(video_path)

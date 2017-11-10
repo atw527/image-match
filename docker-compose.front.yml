@@ -1,16 +1,17 @@
-version: "2"
+version: "2.2"
 services:
-    front:
-        image: "atw527/image-match:front"
+    im-front:
+        image: "atw527/im-front"
+        restart: always
         build:
             context: .
-            dockerfile: Dockerfile-front
+            dockerfile: Dockerfile.front
+        volumes:
+            - ./src/front:/usr/local/bin
+            - ./data:/usr/local/data
+            - ./etc/php.ini:/etc/php/7.0/apache2/php.ini
+            - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf
         expose:
             - "80"
         ports:
             - "8088:80"
-        volumes:
-            - ./front:/var/www/html
-            - ./data:/usr/local/data
-            - ./etc/php.ini:/etc/php/7.0/apache2/php.ini
-            - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf

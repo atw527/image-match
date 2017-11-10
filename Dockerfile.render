@@ -12,4 +12,4 @@ COPY etc/ssh_config /root/.ssh/config
 RUN chown -R root: /root/.ssh
 RUN chmod 0600 /root/.ssh/*
 
-CMD ["bash", "/usr/local/bin/video-process.py"]
+CMD ["bash", "/usr/local/bin/render-forever.sh"]

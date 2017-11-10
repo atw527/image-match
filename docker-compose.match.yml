@@ -1,16 +1,16 @@
 version: "2.2"
 services:
-    im-download:
-        image: "atw527/im-download"
+    im-match:
+        image: "atw527/im-match"
         restart: always
         build:
             context: .
-            dockerfile: Dockerfile.download
+            dockerfile: Dockerfile.match
         volumes:
             - /etc/hostname:/etc/docker_hostname:ro
             - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
             - ./data:/usr/local/data
-            - ./src/download:/usr/local/bin
+            - ./src/match:/usr/local/bin
         environment:
             MASTER: "server-13"
             MYSQL_HOST: "a01-mysql-01"
@@ -18,4 +18,4 @@ services:
             MYSQL_DB: "image_match"
             MYSQL_USER: "root"
             MYSQL_PASS: "q1w2e3r4"
-        command: ["bash", "/usr/local/bin/download-forever.sh"]
+        command: ["bash", "/usr/local/bin/match-forever.sh"]
