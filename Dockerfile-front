@@ -8,4 +8,8 @@ RUN apt-get update; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
+COPY etc/ssh_config /root/.ssh/config
+RUN chown -R root: /root/.ssh
+RUN chmod 0600 /root/.ssh/*
+
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]

@@ -23,10 +23,6 @@ def signal_handler(video_id, x, conn, signal, frame):
             os.system("rm -f video/" + video_id + "*")
         sys.exit(0)
 
-conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
-conn.autocommit(True)
-x = conn.cursor()
-
 # try to figure out our current situation
 if os.path.isdir("/usr/local/data"):
     print "I think I'm in a docker container"
@@ -38,6 +34,7 @@ else:
     print "Cannot find working directory!"
     sys.exit(1)
 
+# get the hostname(s)
 if os.path.isfile("/etc/docker_hostname"):
     hostname = open("/etc/docker_hostname").read()
     hostname = hostname.strip()
@@ -45,6 +42,24 @@ if os.path.isfile("/etc/docker_hostname"):
 else:
     hostname = socket.gethostname()
     container = None
+
+# determine if master/slave
+if "MASTER" in os.environ:
+    if os.environ['MASTER'] == hostname:
+        print "I am MASTER! :)"
+        is_master = True
+    else:
+        print "I am slave :("
+        print "This module is designed for the master node only."
+        is_master = False
+        exit(1)
+else:
+    print "Need to set MASTER environment variable!"
+    exit(1)
+
+conn = MySQLdb.connect(host="a01-mysql-01", user="root", passwd="q1w2e3r4", db="image_match")
+conn.autocommit(True)
+x = conn.cursor()
 
 while True:
     time.sleep(randint(5,10))
