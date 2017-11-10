@@ -4,11 +4,11 @@ WORKDIR /usr/local
 
 COPY etc/sources-xenial.list /etc/apt/sources.list
 RUN apt-get update; \
-    apt-get install -y curl ffmpeg python expect rsync ssh php imagemagick; \
+    apt-get install -y curl wget python python-mysqldb; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/bin/youtube-dl; \
     chmod a+rx /usr/bin/youtube-dl
 
-CMD ["bash", "/usr/local/bin/video_download.sh"]
+CMD ["bash", "/usr/local/bin/download-forever.sh"]

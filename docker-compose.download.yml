@@ -1,0 +1,13 @@
+version: "2"
+services:
+    im-download:
+        image: "atw527/im-download"
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile.download
+        volumes:
+            - /etc/hostname:/etc/docker_hostname:ro
+            - ./data:/usr/local/data
+            - ./src/download:/usr/local/bin
+        command: ["bash", "/usr/local/bin/download-forever.sh"]
