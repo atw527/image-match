@@ -7,10 +7,11 @@ services:
             context: .
             dockerfile: Dockerfile.front
         volumes:
-            - ./src/front:/usr/local/bin
+            - /etc/hostname:/etc/docker_hostname:ro
+            - ./etc/php.ini:/etc/php/7.0/apache2/php.ini:ro
+            - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
+            - ./src/front:/var/www/html:ro
             - ./data:/usr/local/data
-            - ./etc/php.ini:/etc/php/7.0/apache2/php.ini
-            - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf
         expose:
             - "80"
         ports:

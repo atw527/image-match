@@ -9,8 +9,8 @@ services:
         volumes:
             - /etc/hostname:/etc/docker_hostname:ro
             - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+            - ./src/download:/usr/local/bin:ro
             - ./data:/usr/local/data
-            - ./src/download:/usr/local/bin
         environment:
             MASTER: "server-13"
             MYSQL_HOST: "a01-mysql-01"
