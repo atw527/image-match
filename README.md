@@ -48,5 +48,13 @@ Super-long command for dev self-contained system!
 
 ```bash
 #[user image-match]$
+export MASTER=`hostname`
 docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml -f docker-compose.sandbox.yml up --build
+```
+
+When ready to end the test...
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml -f docker-compose.sandbox.yml down --remove-orphans
 ```

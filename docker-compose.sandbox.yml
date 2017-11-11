@@ -3,7 +3,7 @@ services:
     im-mysql:
         image: "mysql:latest"
         ports:
-            - "8086:3306"
+            - "4206:3306"
         expose:
             - "3306"
         volumes:
@@ -14,7 +14,7 @@ services:
     im-phpmyadmin:
         image: "phpmyadmin/phpmyadmin:latest"
         ports:
-            - "8087:80"
+            - "4280:80"
         expose:
             - "80"
         environment:
@@ -22,7 +22,7 @@ services:
 
     im-front:
         environment:
-            MASTER: "a01-docker-02"
+            MASTER: "${MASTER}"
             MYSQL_HOST: "im-mysql"
             MYSQL_PORT: 3306
             MYSQL_DB: "image_match"
@@ -30,7 +30,7 @@ services:
             MYSQL_PASS: "q1w2e3r4"
     im-download:
         environment:
-            MASTER: "a01-docker-02"
+            MASTER: "${MASTER}"
             MYSQL_HOST: "im-mysql"
             MYSQL_PORT: 3306
             MYSQL_DB: "image_match"
@@ -38,7 +38,7 @@ services:
             MYSQL_PASS: "q1w2e3r4"
     im-render:
         environment:
-            MASTER: "a01-docker-02"
+            MASTER: "${MASTER}"
             MYSQL_HOST: "im-mysql"
             MYSQL_PORT: 3306
             MYSQL_DB: "image_match"
@@ -46,7 +46,7 @@ services:
             MYSQL_PASS: "q1w2e3r4"
     im-match:
         environment:
-            MASTER: "a01-docker-02"
+            MASTER: "${MASTER}"
             MYSQL_HOST: "im-mysql"
             MYSQL_PORT: 3306
             MYSQL_DB: "image_match"

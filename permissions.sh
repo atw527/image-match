@@ -1,8 +1,11 @@
 #!/bin/bash
 
-# run this in the repo base directory!
+# Samba and docker mess up directory and file permissions
 
-chown -R andrew: ./
+# Run this in the repo base directory!
+# I go up a directory and then back to verify this is in image-match
 
-chmod -R 0644 ./
-chmod -R a+X ./
+chown -R andrew: ../image-match
+
+chmod -R 0644 ../image-match
+chmod -R a+X ../image-match
