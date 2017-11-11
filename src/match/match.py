@@ -132,7 +132,7 @@ signal.signal(signal.SIGTERM, partial(signal_handler, task_id, cur, conn, dl_req
 if dl_required:
     # fetch copy of frames
     print "[{0}] Copying frames from master...".format(video_id)
-    cmd = "rsync -a andrew@{0}:/home/andrew/go/src/github.com/atw527/image-match/data/frames/{1} data/frames/".format(ENV_MASTER, video_id)
+    cmd = "rsync -a andrew@{0}:/home/andrew/go/src/github.com/atw527/image-match/data/frames/{1} frames/".format(ENV_MASTER, video_id)
     (return_val, output) = commands.getstatusoutput(cmd)
     if return_val != 0:
         fail_log(task_id, video_id, dl_required, cmd + output)
