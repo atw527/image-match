@@ -9,3 +9,5 @@ chown -R andrew: ../image-match
 
 chmod -R 0644 ../image-match
 chmod -R a+X ../image-match
+
+chmod 0777 data/templates

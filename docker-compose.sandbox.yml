@@ -14,7 +14,7 @@ services:
     im-phpmyadmin:
         image: "phpmyadmin/phpmyadmin:latest"
         ports:
-            - "4280:80"
+            - "4285:80"
         expose:
             - "80"
         environment:
