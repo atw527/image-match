@@ -1,3 +1,35 @@
+# Quickstart
+
+_There are currently some directory assumptions.  To make things easier, make sure your gopath and src matches mine.  The repo will live at `/home/andrew/go/src/github.com/atw527`._
+
+```bash
+export GOPATH=$HOME/go
+export GOROOT=/usr/local/go
+export PATH=$PATH:~/go/bin
+```
+
+Check it out.
+
+```bash
+#[user /home/andrew/go/src/github.com/atw527]$
+git clone git@github.com:atw527/image-match.git
+```
+
+CD into `image-match` and spin up the sandbox environment.  Images will take some time to build.
+
+```bash
+#[user image-match]$
+export MASTER=`hostname`
+docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml -f docker-compose.sandbox.yml up --build
+```
+
+Run this to spin everything down.  Databases will be lost, but the downloaded data will remain in the `data/` folder.  So videos that were downloaded and rendered will not have to be redone.  When spinning up the test environment the next time, it will take a few minutes to figure out that the video files & frames already exist and will not download them again.
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml -f docker-compose.sandbox.yml down --remove-orphans
+```
+
 # Download and Build Test Data
 
 - Add data to `download` table
