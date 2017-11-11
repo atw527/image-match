@@ -117,6 +117,8 @@ else:
     args = (time.strftime('%Y-%m-%d %H:%M:%S'), return_val, stdout, stderr, video_id)
     cur.execute(query, args)
 
+os.system("chmod a+r video/{0}*".format(video_id))
+
 # queue it up for processing
 query = "INSERT IGNORE INTO render (video_id) VALUES ('{0}')".format(video_id)
 cur.execute(query)

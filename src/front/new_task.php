@@ -109,7 +109,7 @@
         <?php foreach ($videos as $video): ?>
             <div class="row-video">
                 <h3 class="title"><?=$video['title']?></h3>
-                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" />
+                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" checked="checked" />
                 <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="/data/video/<?=$video['id']?>.jpg" width="100" /></label>
                 <span class="date"><?=$video['date']?></span>
                 <span class="video-id"><?=$video['id']?></span>
