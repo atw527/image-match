@@ -73,7 +73,7 @@
 <?php foreach ($tasks as $task): ?>
     <hr id="<?=$task->video_id?>" style="clear: both; " />
 
-    <a href="https://youtu.be/<?=$task->video_id?>" class="task-image" target="_blank"><img src="/data/video/<?=$task->video_id?>.jpg" width="300" /></a>
+    <a name="<?=$task->video_id?>" href="https://youtu.be/<?=$task->video_id?>" class="task-image" target="_blank"><img src="/data/video/<?=$task->video_id?>.jpg" width="300" /></a>
 
     <p class="meta">
         <span class="label">Started:</span> <span class="value"><?=$task->started?></span><br />
@@ -87,7 +87,7 @@
 
     <?php foreach ($task->matches as $match): ?>
         <a href="https://youtu.be/<?=$match->video_id?>?t=<?=$match->m?>m<?=$match->s?>s" target="_video">
-            <img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" title="Distance: <?=$match->distance?>" />
+            <img src="/data/frames/<?=$match->video_id?>/<?=$match->filename?>" width="200" class="dist-<?=$match->distance?>" title="Distance: <?=$match->distance?>" />
         </a>
     <?php endforeach; ?>
 <?php endforeach; ?>
