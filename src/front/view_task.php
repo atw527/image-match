@@ -12,7 +12,7 @@
         return $ts;
     }
 
-    $db = mysqli_connect('a01-mysql-01', 'root', 'q1w2e3r4', 'image_match');
+    $db = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASS'), getenv('MYSQL_DB'));
     $guid = mysqli_real_escape_string($db, $_GET['guid']);
     $distance = isset($_GET['distance']) ? (int)$_GET['distance'] : 26;
 
@@ -31,7 +31,7 @@
 
     $ids = "'" . implode("', '", $task_ids) . "'";
 
-    $sql = "SELECT * FROM image_matches_bf WHERE task_id IN ($ids) && distance < $distance ORDER BY video_id, filename";
+    $sql = "SELECT * FROM matches WHERE task_id IN ($ids) && distance < $distance ORDER BY video_id, filename";
     $query = $db->query($sql);
     if (!$query) echo $sql;
     while ($row = $query->fetch_object()) {
@@ -68,7 +68,7 @@
 
 <hr />
 
-<img src="/templates/<?=$guid?>.jpg" width="400"/>
+<img src="/data/templates/<?=$guid?>.jpg" width="400"/>
 
 <?php foreach ($tasks as $task): ?>
     <hr id="<?=$task->video_id?>" style="clear: both; " />
@@ -78,7 +78,7 @@
     <p class="meta">
         <span class="label">Started:</span> <span class="value"><?=$task->started?></span><br />
         <span class="label">Completed:</span> <span class="value"><?=$task->completed?></span><br />
-        <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->worker_host?> <?=$task->container?></span><br />
+        <span class="label">Worker Host:</span> <span class="value"><?=$task->task_id?> <?=$task->host?> <?=$task->container?></span><br />
         <span class="label">Video:</span> <span class="value"><?=$task->video_id?></span><br />
         <span class="label">Exceptions:</span> <span class="value"><?=$task->exceptions?></span><br />
     </p>

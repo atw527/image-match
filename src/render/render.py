@@ -12,12 +12,12 @@ import numpy as np
 from functools import partial
 from random import randint
 
-def signal_handler(video_id, x, conn, signal, frame):
+def signal_handler(video_id, cur, conn, signal, frame):
         print('Shuting down...')
 
         # put the item we were working on back in the queue for someone else to pick up
-        query = "UPDATE encode SET host = null, container = null WHERE video_id = '{0}' LIMIT 1".format(video_id)
-        x.execute(query)
+        query = "UPDATE render SET host = null, container = null WHERE video_id = '{0}' LIMIT 1".format(video_id)
+        cur.execute(query)
 
         # delete any progress we made on the task
         if video_id != "":
@@ -56,42 +56,40 @@ else:
     container = None
 
 # determine if master/slave
-if os.environ['MASTER'] == hostname:
+if ENV_MASTER == hostname:
     print "I am MASTER!"
     is_master = True
 else:
     print "I am slave"
-    print "This module is designed for the master node only."
     is_master = False
-    exit(1)
 
 # ready to roll, connect to DB
 conn = MySQLdb.connect(host=ENV_MYSQL_HOST, user=ENV_MYSQL_USER, passwd=ENV_MYSQL_PASS, db=ENV_MYSQL_DB)
 conn.autocommit(True)
-x = conn.cursor()
+cur = conn.cursor()
 
 # wait patiently for something to do
 while True:
     time.sleep(randint(5,10))
     sql = "SELECT video_id FROM render WHERE host IS NULL LIMIT 1"
-    x.execute(sql)
-    if x.rowcount == 1:
+    cur.execute(sql)
+    if cur.rowcount == 1:
         break
 
-row = x.fetchone()
+row = cur.fetchone()
 video_id = row[0]
 
-query = "UPDATE render SET host = %s, container = %s WHERE video_id = %s LIMIT 1"
-args = (hostname, container, video_id)
-x.execute(query, args)
+query = "UPDATE render SET host = %s, container = %s, started = %s WHERE video_id = %s LIMIT 1"
+args = (hostname, container, time.strftime('%Y-%m-%d %H:%M:%S'), video_id)
+cur.execute(query, args)
 
 print "[{0}] Picking up task.".format(video_id)
 
 # now is when we care if the script is killed
-signal.signal(signal.SIGINT, partial(signal_handler, video_id, x, conn))
-signal.signal(signal.SIGTERM, partial(signal_handler, video_id, x, conn))
+signal.signal(signal.SIGINT, partial(signal_handler, video_id, cur, conn))
+signal.signal(signal.SIGTERM, partial(signal_handler, video_id, cur, conn))
 
-if !is_master:
+if not is_master:
     print "[{0}] Cleaning local folders and pulling MP4...".format(video_id)
 
     # hoping for a return_val of 23 (file not found), will get 0 if found
@@ -100,7 +98,7 @@ if !is_master:
         print "[{0}] Frames directory found on master!  Skipping.".format(video_id)
         query = "UPDATE render SET completed = %s, notes = %s WHERE video_id = %s LIMIT 1"
         args = (time.strftime('%Y-%m-%d %H:%M:%S'), "skipped", video_id)
-        x.execute(query, args)
+        cur.execute(query, args)
         exit(0)
 
     if video_id != "":
@@ -115,7 +113,7 @@ else:
         print "[{0}] Frames directory found!  Skipping.".format(video_id)
         query = "UPDATE render SET completed = %s, notes = %s WHERE video_id = %s LIMIT 1"
         args = (time.strftime('%Y-%m-%d %H:%M:%S'), "skipped", video_id)
-        x.execute(query, args)
+        cur.execute(query, args)
         exit(0)
 
 # extract the frames
@@ -162,9 +160,9 @@ while True:
 
 os.chdir("../../")
 
-if !is_master:
+if not is_master:
     print "[{0}] Copying frames back to {1}...".format(video_id, ENV_MASTER)
-    os.system("rsync -a --delete-excluded frames/{0} andrew@{1}:/home/andrew/go/src/github.com/atw527/image-match/data/frames/".format(video_id), ENV_MASTER)
+    os.system("rsync -a --delete-excluded frames/{0} andrew@{1}:/home/andrew/go/src/github.com/atw527/image-match/data/frames/".format(video_id, ENV_MASTER))
 
     # cleaning up
     print "[{0}] Cleaning up...".format(video_id)
@@ -175,6 +173,6 @@ if !is_master:
 
 query = "UPDATE render SET completed = %s, exceptions = %s WHERE video_id = %s LIMIT 1"
 args = (time.strftime('%Y-%m-%d %H:%M:%S'), exceptions, video_id)
-x.execute(query, args)
+cur.execute(query, args)
 
 print "[{0}] Done!".format(video_id)

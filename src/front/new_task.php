@@ -12,7 +12,7 @@
     }
 
     if (isset($_POST['submit'])) {
-        $db = mysqli_connect('a01-mysql-01', 'root', 'q1w2e3r4', 'image_match');
+        $db = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASS'), getenv('MYSQL_DB'));
         $guid = getGUID();
 
         // Set a maximum height and width
@@ -32,7 +32,7 @@
         $image_p = imagecreatetruecolor($width, $height);
         $image = imagecreatefromjpeg($_FILES['template']['tmp_name']);
         imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-        imagejpeg($image_p, "templates/$guid.jpg", 100);
+        imagejpeg($image_p, "/usr/local/data/templates/$guid.jpg", 100);
 
         foreach ($_POST['videos'] as $video_id => $selected) {
             $video_id = mysqli_real_escape_string($db, $video_id);
@@ -110,7 +110,7 @@
             <div class="row-video">
                 <h3 class="title"><?=$video['title']?></h3>
                 <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" />
-                <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="<?=$video['thumbnail']?>" width="100" /></label>
+                <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="/data/video/<?=$video['id']?>.jpg" width="100" /></label>
                 <span class="date"><?=$video['date']?></span>
                 <span class="video-id"><?=$video['id']?></span>
             </div>

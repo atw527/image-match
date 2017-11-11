@@ -7,6 +7,7 @@ import sys
 import signal
 import time
 import socket
+import commands
 import numpy as np
 from functools import partial
 from matplotlib import pyplot as plt
@@ -17,22 +18,22 @@ def fail_log(task_id, video_id, dl_required, notes):
         os.system("rm -f data/frames/" + video_id + "/*.jpg")
         os.system("rmdir data/frames/" + video_id)
 
-     query = "DELETE FROM image_matches_bf WHERE task_id = {0}".format(task_id)
-     x.execute(query)
+    query = "DELETE FROM matches WHERE task_id = {0}".format(task_id)
+    cur.execute(query)
 
-     query = "UPDATE tasks SET completed = %s, notes = %s WHERE task_id = %s LIMIT 1"
-     args = (time.strftime('%Y-%m-%d %H:%M:%S'), notes, task_id)
-     x.execute(query, args)
+    query = "UPDATE tasks SET completed = %s, notes = %s WHERE task_id = %s LIMIT 1"
+    args = (time.strftime('%Y-%m-%d %H:%M:%S'), notes, task_id)
+    cur.execute(query, args)
 
     sys.exit(1)
 
-def signal_handler(task_id, x, conn, dl_required, signal, frame):
+def signal_handler(task_id, cur, conn, dl_required, signal, frame):
     print('Shuting down...')
 
-    query = "DELETE FROM image_matches_bf WHERE task_id = " + str(task_id)
-    x.execute(query)
+    query = "DELETE FROM matches WHERE task_id = " + str(task_id)
+    cur.execute(query)
     query = "UPDATE tasks SET host = null, started = null, completed = null WHERE task_id = " + str(task_id) + " LIMIT 1"
-    x.execute(query)
+    cur.execute(query)
 
     if video_id != "" and dl_required:
         os.system("rm -f data/frames/" + video_id + "/*.jpg")
@@ -69,19 +70,17 @@ else:
     container = None
 
 # determine if master/slave
-if os.environ['MASTER'] == hostname:
+if ENV_MASTER == hostname:
     print "I am MASTER!"
     is_master = True
 else:
     print "I am slave"
-    print "This module is designed for the master node only."
     is_master = False
-    exit(1)
 
 # ready to roll, connect to DB
 conn = MySQLdb.connect(host=ENV_MYSQL_HOST, user=ENV_MYSQL_USER, passwd=ENV_MYSQL_PASS, db=ENV_MYSQL_DB)
 conn.autocommit(True)
-x = conn.cursor()
+cur = conn.cursor()
 
 dirs = next(os.walk('frames'))[1]
 dir_list = "'" + "', '".join(dirs) + "'"
@@ -89,21 +88,21 @@ dir_list = "'" + "', '".join(dirs) + "'"
 while True:
     # first try to pickup a task where we hold the frames
     sql = "SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL && video_id IN (" + dir_list + ") LIMIT 1"
-    x.execute(sql)
-    if x.rowcount == 1:
+    cur.execute(sql)
+    if cur.rowcount == 1:
         dl_required = False
         break
 
     # if there are no tasks available, offer to pickup one that requires a rsync
     sql = "SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1"
-    x.execute(sql)
-    if x.rowcount == 1:
+    cur.execute(sql)
+    if cur.rowcount == 1:
         dl_required = True
         break
 
     time.sleep(5)
 
-row = x.fetchone()
+row = cur.fetchone()
 
 task_id = row[0]
 task_guid = row[1]
@@ -122,13 +121,13 @@ else:
 
 query = "UPDATE tasks SET host = %s, container = %s, started = %s WHERE task_id = %s LIMIT 1"
 args = (hostname, container, time.strftime('%Y-%m-%d %H:%M:%S'), task_id)
-x.execute(query, args)
+cur.execute(query, args)
 
 start_time = time.time()
 print "Picking up task: ", task_id, task_guid, video_id
 
-signal.signal(signal.SIGINT, partial(signal_handler, task_id, x, conn, dl_required))
-signal.signal(signal.SIGTERM, partial(signal_handler, task_id, x, conn, dl_required))
+signal.signal(signal.SIGINT, partial(signal_handler, task_id, cur, conn, dl_required))
+signal.signal(signal.SIGTERM, partial(signal_handler, task_id, cur, conn, dl_required))
 
 if dl_required:
     # fetch copy of frames
@@ -139,12 +138,15 @@ if dl_required:
 
 # fetch template image
 print "[{0}] Copying image template from master...".format(video_id)
-(return_val, output) = commands.getstatusoutput("wget -O /tmp/{0} http://{1}:8088/templates/{0}".format(row[3], ENV_MASTER)
+os.system("rm -f /tmp/" + row[3])
+(return_val, output) = commands.getstatusoutput("wget -O /tmp/{0} http://{1}:8088/data/templates/{0}".format(row[3], ENV_MASTER))
 if return_val != 0:
     fail_log(task_id, video_id, dl_required, output)
 
 img1 = cv2.imread(source_image, 0)
 orb = cv2.ORB()
+
+print "[{0}] Starting the match process...".format(video_id)
 
 filelist = os.listdir(video_path)
 for filename in sorted(filelist):
@@ -172,18 +174,18 @@ for filename in sorted(filelist):
             #print video_id, frame, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx
 
             if matches[0].distance < 26: # only saving matches now
-                query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                query = "INSERT INTO matches (video_id, task_id, frame, filename, distance, trainIdx, queryIdx, imgIdx) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 args = (video_id, task_id, frame, filename, matches[0].distance, matches[0].trainIdx, matches[0].queryIdx, matches[0].imgIdx)
-                x.execute(query, args)
+                cur.execute(query, args)
                 #conn.commit()
 
         except Exception, e:
             print str(e)
             print "Exception: ", video_path, filename, source_image, task_id, frame, filename
             exceptions = exceptions + 1
-            #query = "INSERT INTO image_matches_bf (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
+            #query = "INSERT INTO matches (video_id, task_id, frame, filename) VALUES (%s, %s, %s, %s)"
             #args = (video_id, task_id, frame, filename)
-            #x.execute(query, args)
+            #cur.execute(query, args)
 
 # cleaning up
 print "[{0}] Cleaning up...".format(video_id)
@@ -193,7 +195,7 @@ if video_id != "" and dl_required:
 
 query = "UPDATE tasks SET completed = %s, exceptions = %s WHERE task_id = %s LIMIT 1"
 args = (time.strftime('%Y-%m-%d %H:%M:%S'), exceptions, task_id)
-x.execute(query, args)
+cur.execute(query, args)
 
 run_time = (time.time() - start_time) / 60
 print "Finished task:   ", task_id, task_guid, video_id, run_time, " min"

@@ -11,12 +11,12 @@ import re
 from functools import partial
 from random import randint
 
-def signal_handler(video_id, x, conn, signal, frame):
+def signal_handler(video_id, cur, conn, signal, frame):
         print('Shuting down...')
 
         # put the item we were working on back in the queue for someone else to pick up
         query = "UPDATE download SET host = null, container = null, started = null WHERE video_id = '" + video_id + "' LIMIT 1"
-        x.execute(query)
+        cur.execute(query)
 
         # delete any progress we made on the task
         if video_id != "":
@@ -52,7 +52,7 @@ else:
     container = None
 
 # determine if master/slave
-if os.environ['MASTER'] == hostname:
+if ENV_MASTER == hostname:
     print "I am MASTER!"
     is_master = True
 else:
@@ -64,28 +64,28 @@ else:
 # ready to roll, connect to DB
 conn = MySQLdb.connect(host=ENV_MYSQL_HOST, user=ENV_MYSQL_USER, passwd=ENV_MYSQL_PASS, db=ENV_MYSQL_DB)
 conn.autocommit(True)
-x = conn.cursor()
+cur = conn.cursor()
 
 # wait patiently for something to do
 while True:
     time.sleep(randint(5,10))
     sql = "SELECT video_id FROM download WHERE host IS NULL LIMIT 1"
-    x.execute(sql)
-    if x.rowcount == 1:
+    cur.execute(sql)
+    if cur.rowcount == 1:
         break
 
-row = x.fetchone()
+row = cur.fetchone()
 video_id = row[0]
 
 query = "UPDATE download SET host = %s, container = %s, started = %s WHERE video_id = %s LIMIT 1"
 args = (hostname, container, time.strftime('%Y-%m-%d %H:%M:%S'), video_id)
-x.execute(query, args)
+cur.execute(query, args)
 
 print "[{0}] Picking up task.".format(video_id)
 
 # now is when we care if the script is killed
-signal.signal(signal.SIGINT, partial(signal_handler, video_id, x, conn))
-signal.signal(signal.SIGTERM, partial(signal_handler, video_id, x, conn))
+signal.signal(signal.SIGINT, partial(signal_handler, video_id, cur, conn))
+signal.signal(signal.SIGTERM, partial(signal_handler, video_id, cur, conn))
 
 # download
 # 160  mp4  256x144    DASH video
@@ -100,7 +100,7 @@ if os.path.isfile("video/{0}.mp4".format(video_id)):
 
     query = "UPDATE download SET completed = %s WHERE video_id = %s LIMIT 1"
     args = (time.strftime('%Y-%m-%d %H:%M:%S'), video_id)
-    x.execute(query, args)
+    cur.execute(query, args)
 else:
     print "[{0}] Downloading...".format(video_id)
     dl_command = "youtube-dl --write-thumbnail --write-description --write-info-json --restrict-filenames -o 'video/%(id)s.%(ext)s' -f {0} https://www.youtube.com/watch?v={1} >/tmp/stdout-{1} 2>/tmp/stderr-{1}"
@@ -115,10 +115,10 @@ else:
 
     query = "UPDATE download SET completed = %s, exit_code = %s, stdout = %s, stderr = %s WHERE video_id = %s LIMIT 1"
     args = (time.strftime('%Y-%m-%d %H:%M:%S'), return_val, stdout, stderr, video_id)
-    x.execute(query, args)
+    cur.execute(query, args)
 
-    # queue it up for processing
-    query = "INSERT IGNORE INTO render (video_id) VALUES ({0})".format(video_id)
-    x.execute(query)
+# queue it up for processing
+query = "INSERT IGNORE INTO render (video_id) VALUES ('{0}')".format(video_id)
+cur.execute(query)
 
 print "[{0}] Done!".format(video_id)

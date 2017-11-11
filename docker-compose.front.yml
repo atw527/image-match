@@ -12,6 +12,13 @@ services:
             - ./etc/000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
             - ./src/front:/var/www/html:ro
             - ./data:/usr/local/data
+        environment:
+            MASTER: "server-13"
+            MYSQL_HOST: "a01-mysql-01"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"
         expose:
             - "80"
         ports:

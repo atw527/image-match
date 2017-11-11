@@ -1,0 +1,54 @@
+version: "2.2"
+services:
+    im-mysql:
+        image: "mysql:latest"
+        ports:
+            - "8086:3306"
+        expose:
+            - "3306"
+        volumes:
+            - ./sql:/docker-entrypoint-initdb.d
+            - ./etc/my.local.cnf:/etc/mysql/conf.d/my.local.cnf
+        environment:
+            MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    im-phpmyadmin:
+        image: "phpmyadmin/phpmyadmin:latest"
+        ports:
+            - "8087:80"
+        expose:
+            - "80"
+        environment:
+            PMA_HOSTS: "im-mysql"
+
+    im-front:
+        environment:
+            MASTER: "a01-docker-02"
+            MYSQL_HOST: "im-mysql"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"
+    im-download:
+        environment:
+            MASTER: "a01-docker-02"
+            MYSQL_HOST: "im-mysql"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"
+    im-render:
+        environment:
+            MASTER: "a01-docker-02"
+            MYSQL_HOST: "im-mysql"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"
+    im-match:
+        environment:
+            MASTER: "a01-docker-02"
+            MYSQL_HOST: "im-mysql"
+            MYSQL_PORT: 3306
+            MYSQL_DB: "image_match"
+            MYSQL_USER: "root"
+            MYSQL_PASS: "q1w2e3r4"

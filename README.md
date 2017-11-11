@@ -43,3 +43,10 @@ This next example runs both processing modules on the same host.  The load could
 #[user image-match]$
 docker-compose -f docker-compose.match.yml -f docker-compose.render.yml up --build --scale im-match=2 im-render=2
 ```
+
+Super-long command for dev self-contained system!
+
+```bash
+#[user image-match]$
+docker-compose -f docker-compose.front.yml -f docker-compose.download.yml -f docker-compose.render.yml -f docker-compose.match.yml -f docker-compose.sandbox.yml up --build
+```
