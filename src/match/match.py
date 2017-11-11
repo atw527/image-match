@@ -93,12 +93,13 @@ while True:
         dl_required = False
         break
 
-    # if there are no tasks available, offer to pickup one that requires a rsync
-    sql = "SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1"
-    cur.execute(sql)
-    if cur.rowcount == 1:
-        dl_required = True
-        break
+    if not is_master:
+        # if there are no tasks available, offer to pickup one that requires a rsync
+        sql = "SELECT task_id, guid, video_id, template FROM tasks WHERE started IS NULL LIMIT 1"
+        cur.execute(sql)
+        if cur.rowcount == 1:
+            dl_required = True
+            break
 
     time.sleep(5)
 
@@ -143,7 +144,7 @@ if dl_required:
 # fetch template image
 print "[{0}] Copying image template from master...".format(video_id)
 os.system("rm -f /tmp/" + row[3])
-(return_val, output) = commands.getstatusoutput("wget -O /tmp/{0} http://{1}:8088/data/templates/{0}".format(row[3], ENV_MASTER))
+(return_val, output) = commands.getstatusoutput("wget -O /tmp/{0} http://{1}:4280/data/templates/{0}".format(row[3], ENV_MASTER))
 if return_val != 0:
     fail_log(task_id, video_id, dl_required, output)
 
