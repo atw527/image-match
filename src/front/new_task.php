@@ -101,15 +101,35 @@
             color: #333;
         }
     </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#selectall").click(function(){
+            //alert("just for check");
+            if(this.checked){
+                $('.vcheck').each(function(){
+                    this.checked = true;
+                })
+            }else{
+                $('.vcheck').each(function(){
+                    this.checked = false;
+                })
+            }
+        });
+    });
+    </script>
 </head>
 <body>
     <form method="post" enctype="multipart/form-data">
+        <input type="checkbox" id="selectall" value="1" />
+
         <label for="template">Image Template:</label>
         <input type="file" name="template" id="template" />
         <?php foreach ($videos as $video): ?>
             <div class="row-video">
                 <h3 class="title"><?=$video['title']?></h3>
-                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" checked="checked" />
+                <input type="checkbox" class="vcheck" name="videos[<?=$video['id']?>]" id="videos-<?=$video['id']?>" value="1" />
                 <label for="videos-<?=$video['id']?>"><img class="thumbnail" src="/data/video/<?=$video['id']?>.jpg" width="100" /></label>
                 <span class="date"><?=$video['date']?></span>
                 <span class="video-id"><?=$video['id']?></span>
