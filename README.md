@@ -15,7 +15,14 @@ Check it out.
 git clone git@github.com:atw527/image-match.git
 ```
 
-CD into `image-match` and spin up the sandbox environment.  Images will take some time to build.
+CD into `image-match` and set some permissions that are not saved in the repo.
+
+```bash
+#[user image-match]$
+sudo bash permissions.sh
+```
+
+Now spin up the sandbox environment.  Images will take some time to build.
 
 ```bash
 #[user image-match]$
