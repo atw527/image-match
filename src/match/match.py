@@ -126,6 +126,9 @@ cur.execute(query, args)
 start_time = time.time()
 print "Picking up task: ", task_id, task_guid, video_id
 
+if is_master and dl_required: # we have reached an impossible situation
+    fail_log(task_id, video_id, False, "is_master and dl_master both true")
+
 signal.signal(signal.SIGINT, partial(signal_handler, task_id, cur, conn, dl_required))
 signal.signal(signal.SIGTERM, partial(signal_handler, task_id, cur, conn, dl_required))
 
